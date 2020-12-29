@@ -1,0 +1,19 @@
+<RCC>
+    <qresource prefix="/">
+        <file>shaders/fragshader.glsl</file>
+        <file>shaders/vertshader.glsl</file>
+        <file>shaders/fragshader_surface.glsl</file>
+	<file>shaders/fragshader_greg_quad.glsl</file>
+	<file>shaders/fragshader_greg_tri.glsl</file>
+        <file>shaders/tcs.glsl</file>
+	<file>shaders/tcs_quad.glsl</file>
+	<file>shaders/tcs_tri.glsl</file>
+        <file>shaders/tes.glsl</file>
+	<file>shaders/tes_quad.glsl</file>
+	<file>shaders/tes_tri.glsl</file>
+        <file>shaders/vertshader_surface.glsl</file>
+        <file>shaders/fragshader_limit.glsl</file>
+        <file>shaders/vertshader_limit.glsl</file>
+	<file>shaders/vertshader_surface.glsl</file>
+    </qresource>
+</RCC>
