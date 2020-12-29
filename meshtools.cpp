@@ -180,7 +180,6 @@ void Mesh::computeSurfacePatches_v2() { // triangle, quad, but execpts boundarie
                         m[i] = (0.5 * currentVertex->coords + 0.5 * currentEdge->target->coords);
                         c[i] = (centroid/float(shape));
                     }
-.
                     currentEdge = currentEdge->twin->next; // move to next neighbor edge
                 }
 
@@ -226,7 +225,8 @@ QVector<QVector3D> Mesh:: cal_q(int val, QVector<QVector3D> m, QVector<QVector3D
         q[1] = q[1] + (((1.0- theta * cos(M_PI/float(q_mod)))*cos(2.0*float(i)*M_PI/float(q_mod))* m[i])    // q -
               + (2.0 * theta * cos(2.0*float(i)*M_PI/float(val)) * c[i]));
     }
-    q = 2/val * q;
+    q[0] = 2/val * q[0];
+    q[1] = 2/val * q[1];
     return q;
 }
 QVector<QVector3D> Mesh:: cal_r(QVector<QVector3D> m, QVector<QVector3D> c) // calculate r for Face point [0] == + [1] == -
@@ -234,7 +234,7 @@ QVector<QVector3D> Mesh:: cal_r(QVector<QVector3D> m, QVector<QVector3D> c) // c
 
     QVector<QVector3D> r;
     r.reserve(2);
-    r[0] = (1.0/3.0 * (m[1] - m.end())) + (2.0/3.0 * (c.begin() - c.end()));    // r +
+    r[0] = (1.0/3.0 * (m[1] - m.last())) + (2.0/3.0 * (c[0] - c.last()));    // r +
     r[1] = (1.0/3.0 * (m[2] - m[0])) + (2.0/3.0 * (c[1] - c[0]));               // r -
     return r;
 }
