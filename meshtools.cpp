@@ -127,22 +127,18 @@ void Mesh::computeSurfacePatches_v2() { // triangle, quad, but execpts boundarie
     GregoryTriPointIndices.reserve(numFaces*15);
 
 
-
-
-    int count_ex_ind;
-
-    //EDGE Points calculation
-    QVector<QVector3D> e;
-    e.clear();
-
-
-    //FACE Points send to Tessellation (calculate only f values not F)
-    QVector<QVector3D> f;
-    f.clear();
-
     for (k=0; k<numFaces; k++) { // along with all faces
         Face* currentFace = &faces[k];
         n = currentFace->val;
+        //EDGE Points calculation
+        QVector<QVector3D> e;
+        e.clear();
+
+
+        //FACE Points send to Tessellation (calculate only f values not F)
+        QVector<QVector3D> f;
+        f.clear();
+
 
         if (n == 4) {// quads case
             HalfEdge* bottomEdge = currentFace->side;
@@ -152,6 +148,8 @@ void Mesh::computeSurfacePatches_v2() { // triangle, quad, but execpts boundarie
             HalfEdge* currentEdge = bottomEdge;
 
             Vertex* currentVertex = leftEdge->target;
+            int currentVertex_ind = currentVertex->index;
+
             for (int v_ind=0;v_ind<4;v_ind++){
                 // find Vertex related mid edge points and face center points
                 // this can be optimized with --> set m, c into the vertex class (once per vertex to calculate) but need to know which edge is connected m and c
@@ -182,9 +180,21 @@ void Mesh::computeSurfacePatches_v2() { // triangle, quad, but execpts boundarie
                     }
                     currentEdge = currentEdge->twin->next; // move to next neighbor edge
                 }
+                //calculate Edge points
+                float lambda = cal_lambda(currentVertex->val);
+                QVector<QVector3D> q = cal_q(currentVertex->val,m,c);
+                e.append((vertexLimitCoords[currentVertex_ind]) + ((2.0 / 3.0) * lambda * q[0])); //e+
+                e.append((vertexLimitCoords[currentVertex_ind]) + ((2.0 / 3.0) * lambda * q[1])); //e-
 
+                //calculate Face points -- need to modify again
+                QVector<QVector3D> r = cal_r(m,c);
+                f.append(1.0/3.0 * ((c[1] * vertexLimitCoords[currentVertex_ind]) + ((-2.0 * c[0]) - c[1]) * e[0] + (2.0 * c[0] * e[3]) + r[0] + 3.0 * e[0])); //f+
+                f.append(1.0/3.0 * ((c[1] * vertexLimitCoords[currentVertex_ind]) + ((-2.0 * c[0]) - c[1]) * e[0] + (2.0 * c[0] * e[3]) + r[0] + 3.0 * e[0])); //f-
+
+                //move to next vertex point
                 currentEdge = currentEdge->next;
                 currentVertex = currentEdge->target; // move to next vertex on quad
+                currentVertex_ind = currentVertex->index;
             }
 
         }
@@ -205,7 +215,7 @@ void Mesh::computeSurfacePatches_v2() { // triangle, quad, but execpts boundarie
     qDebug() << "controlPointIndices size" << controlPointIndices.size();
 
 }
-float Mesh:: cal_rambda(int val) // calculate rambda for Edge point
+float Mesh:: cal_lambda(int val) // calculate rambda for Edge point
 {
     float rambda = 0.0;
      rambda = (1.0/16.0) * (5.0 + cos(2.0*M_PI/float(val)) + cos(M_PI/float(val)) * sqrt(18.0 + (2.0 * cos(2.0*M_PI/float(val)))));

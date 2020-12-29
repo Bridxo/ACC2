@@ -59,7 +59,7 @@ public:
     void splitHalfEdges(QVector<Vertex>& newVertices, QVector<HalfEdge>& newHalfEdges);
 
     // Gregory patch calculation
-    float cal_rambda(int val);
+    float cal_lambda(int val);
     QVector<QVector3D> cal_q(int val, QVector<QVector3D> m, QVector<QVector3D> c);
     QVector<QVector3D> cal_r(QVector<QVector3D> m, QVector<QVector3D> c);
 
