@@ -1,11 +1,11 @@
-#include "meshrenderer_regular_quads.h"
+#include "meshrenderer_irregular_quad.h"
 
-MeshRendererRegularQuads::MeshRendererRegularQuads()
+MeshRendererIrregularQuads::MeshRendererIrregularQuads()
 {
     meshIBOSize = 0;
 }
 
-MeshRendererRegularQuads::~MeshRendererRegularQuads() {
+MeshRendererIrregularQuads::~MeshRendererIrregularQuads() {
     gl->glDeleteVertexArrays(1, &vao);
 
     gl->glDeleteBuffers(1, &meshCoordsBO);
@@ -13,7 +13,7 @@ MeshRendererRegularQuads::~MeshRendererRegularQuads() {
     gl->glDeleteBuffers(1, &meshIndexBO);
 }
 
-void MeshRendererRegularQuads::init(QOpenGLFunctions_4_1_Core* f, Settings* s) {
+void MeshRendererIrregularQuads::init(QOpenGLFunctions_4_1_Core* f, Settings* s) {
     gl = f;
     settings = s;
 
@@ -21,10 +21,10 @@ void MeshRendererRegularQuads::init(QOpenGLFunctions_4_1_Core* f, Settings* s) {
     initBuffers();
 }
 
-void MeshRendererRegularQuads::initShaders() {
+void MeshRendererIrregularQuads::initShaders() {
     shaderProg.create();
     shaderProg.addShaderFromSourceFile(QOpenGLShader::Vertex, ":/shaders/vertshader.glsl");
-    shaderProg.addShaderFromSourceFile(QOpenGLShader::Fragment, ":/shaders/fragshader_regular_quads.glsl");
+    shaderProg.addShaderFromSourceFile(QOpenGLShader::Fragment, ":/shaders/fragshader_irregular_quads.glsl");
 
     shaderProg.link();
 
@@ -35,7 +35,7 @@ void MeshRendererRegularQuads::initShaders() {
 
 }
 
-void MeshRendererRegularQuads::initBuffers() {
+void MeshRendererIrregularQuads::initBuffers() {
 
     gl->glGenVertexArrays(1, &vao);
     gl->glBindVertexArray(vao);
@@ -57,7 +57,7 @@ void MeshRendererRegularQuads::initBuffers() {
 
 }
 
-void MeshRendererRegularQuads::updateBuffers(Mesh& currentMesh) {
+void MeshRendererIrregularQuads::updateBuffers(Mesh& currentMesh) {
 
     qDebug() << ".. updateBuffers";
 
@@ -66,10 +66,10 @@ void MeshRendererRegularQuads::updateBuffers(Mesh& currentMesh) {
     QVector<QVector3D>& vertexCoords = currentMesh.getVertexCoords();
     QVector<QVector3D>& vertexNormals = currentMesh.getVertexNorms();
 
-    QVector<unsigned int>& regularQuadIndices = currentMesh.getRegularQuadIndices();
+    QVector<unsigned int>& irregularQuadIndices = currentMesh.getIrregularQuadIndices();
 
     qDebug() << "vertexCoords size" << vertexCoords.size();
-    qDebug() << "regularQuadIndices size" << regularQuadIndices.size();
+    qDebug() << "regularQuadIndices size" << irregularQuadIndices.size();
 
     gl->glBindBuffer(GL_ARRAY_BUFFER, meshCoordsBO);
     gl->glBufferData(GL_ARRAY_BUFFER, sizeof(QVector3D)*vertexCoords.size(), vertexCoords.data(), GL_DYNAMIC_DRAW);
@@ -82,22 +82,22 @@ void MeshRendererRegularQuads::updateBuffers(Mesh& currentMesh) {
     qDebug() << " → Updated meshNormalsBO";
 
     gl->glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, meshIndexBO);
-    gl->glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(unsigned int)*regularQuadIndices.size(), regularQuadIndices.data(), GL_DYNAMIC_DRAW);
+    gl->glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(unsigned int)*irregularQuadIndices.size(), irregularQuadIndices.data(), GL_DYNAMIC_DRAW);
 
     qDebug() << " → Updated meshIndexBO";
 
-    meshIBOSize = regularQuadIndices.size();
+    meshIBOSize = irregularQuadIndices.size();
 }
 
-void MeshRendererRegularQuads::updateUniforms() {
-    //qDebug() << "###update uniforms in regular meshrenderer###";
+void MeshRendererIrregularQuads::updateUniforms() {
+    //qDebug() << "###update uniforms in irregular meshrenderer###";
     gl->glUniformMatrix4fv(uniModelViewMatrix, 1, false, settings->modelViewMatrix.data());
     gl->glUniformMatrix4fv(uniProjectionMatrix, 1, false, settings->projectionMatrix.data());
     gl->glUniformMatrix3fv(uniNormalMatrix, 1, false, settings->normalMatrix.data());
 }
 
-void MeshRendererRegularQuads::draw() {
-    qDebug() << "***draw regular quads***";
+void MeshRendererIrregularQuads::draw() {
+    qDebug() << "***draw irregular quads***";
     shaderProg.bind();
 
     if (settings->uniformUpdateRequired) {

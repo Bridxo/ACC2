@@ -1,4 +1,4 @@
-#include "gregoryrenderer_triangle.h"
+#include "gregoryrenderer_tri.h"
 
 GregoryRendererTriangle::GregoryRendererTriangle()
 {

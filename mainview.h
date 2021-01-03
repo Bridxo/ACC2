@@ -9,13 +9,13 @@
 
 #include "mesh.h"
 #include "meshrenderer.h"
-#include "meshrenderer_regular_quads.h"
-#include "meshrenderer_irregular_quads.h"
-#include "meshrenderer_triangles.h"
+#include "meshrenderer_quad.h"
+#include "meshrenderer_irregular_quad.h"
+#include "meshrenderer_tri.h"
 #include "limitrenderer.h"
 #include "tessellationrenderer.h"
 #include "gregoryrenderer_quad.h"
-#include "gregoryrenderer_triangle.h"
+#include "gregoryrenderer_tri.h"
 
 class MainView : public QOpenGLWidget, protected QOpenGLFunctions_4_1_Core {
 

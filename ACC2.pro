@@ -22,7 +22,12 @@ SOURCES += main.cpp\
     mainview.cpp \
     settings.cpp \
     tessellationrenderer.cpp \
-    gregoryrenderer.cpp
+    gregoryrenderer_quad.cpp \
+    gregoryrenderer_tri.cpp \
+    meshrenderer_irregular_quad.cpp \
+    meshrenderer_quad.cpp \
+    meshrenderer_tri.cpp
+
 
 HEADERS  += mainwindow.h \
     limitrenderer.h \
@@ -36,7 +41,11 @@ HEADERS  += mainwindow.h \
     halfedge.h \
     face.h \
     mainview.h \
-    gregoryrenderer.h
+    gregoryrenderer_quad.h \
+    gregoryrenderer_tri.h \
+    gregoryrenderer_irregular_quad.h \
+    meshrenderer_tri.h \
+    meshrenderer_quad.h
 
 FORMS    += mainwindow.ui
 

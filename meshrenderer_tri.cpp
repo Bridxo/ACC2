@@ -1,4 +1,4 @@
-#include "meshrenderer_triangles.h"
+#include "meshrenderer_tri.h"
 
 MeshRendererTriangles::MeshRendererTriangles()
 {
