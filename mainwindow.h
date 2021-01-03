@@ -28,6 +28,8 @@ private slots:
   void on_SurfacePatch_toggled(bool checked);
   void on_RenderMesh_toggled(bool checked);
   void on_GregoryPatch_toggled(bool checked);
+  void on_DiffColors_toggled(bool checked);
+  void on_Edges_toggled(bool checked);
 
   void on_Tess_level_valueChanged(int value);
 

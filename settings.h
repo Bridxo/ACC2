@@ -14,12 +14,15 @@ public:
     bool showSurfacePatch;
     bool showControlMesh;
     bool showGregoryPatch;
+    bool useDifferentColors;
+    bool showEdges;
 
     float FoV;
     float dispRatio;
     float rotAngle;
 
     bool uniformUpdateRequired;
+    bool uniformEdgesUpdateRequired;
     bool uniformLimitUpdateRequired;
     bool uniformTesUpdateRequired;
     bool uniformGregUpdateRequired;

@@ -45,9 +45,13 @@ void MainView::initializeGL() {
 
     // initialize renderers here with the current context
     mr.init(functions, &settings);
+    regularQuadmr.init(functions, &settings);
+    irregularQuadmr.init(functions, &settings);
+    trianglemr.init(functions, &settings);
     limr.init(functions, &settings);
     tesr.init(functions, &settings);
-    gregr.init(functions, &settings);
+    gregQuadr.init(functions, &settings);
+    gregTrir.init(functions, &settings);
 
     updateMatrices();
 }
@@ -73,6 +77,7 @@ void MainView::updateMatrices() {
     settings.normalMatrix = settings.modelViewMatrix.normalMatrix();
 
     settings.uniformUpdateRequired = true;
+    settings.uniformEdgesUpdateRequired = true;
     settings.uniformLimitUpdateRequired = true;
     settings.uniformTesUpdateRequired = true;
     settings.uniformGregUpdateRequired = true;
@@ -82,10 +87,13 @@ void MainView::updateMatrices() {
 
 void MainView::updateBuffers(Mesh &currentMesh) {
     mr.updateBuffers(currentMesh);
+    regularQuadmr.updateBuffers(currentMesh);
+    irregularQuadmr.updateBuffers(currentMesh);
+    trianglemr.updateBuffers(currentMesh);
     limr.updateBuffers(currentMesh);
     tesr.updateBuffers(currentMesh);
-    gregr.updateBuffers(currentMesh);
-
+    gregQuadr.updateBuffers(currentMesh);
+    gregTrir.updateBuffers(currentMesh);
     update();
 }
 
@@ -105,7 +113,18 @@ void MainView::paintGL() {
     }*/
 
     if (settings.showControlMesh) {
-        mr.draw();
+        if (settings.useDifferentColors){
+            regularQuadmr.draw();
+            irregularQuadmr.draw();
+            trianglemr.draw();
+        } else{
+            mr.draw();
+        }
+
+        if (settings.showEdges && !settings.wireframeMode){
+            glPolygonMode( GL_FRONT_AND_BACK, GL_LINE );
+            mr.drawEdges();
+        }
     }
 
     if (settings.limitPosition) {
@@ -113,11 +132,22 @@ void MainView::paintGL() {
     }
 
     if (settings.showSurfacePatch) {
-        tesr.draw();
+        if (settings.useDifferentColors){
+            //triangletesr.draw();
+        } else{
+            tesr.draw();
+        }
+
+        /*if (settings.showEdges && !settings.wireframeMode){
+            glPolygonMode( GL_FRONT_AND_BACK, GL_LINE );
+            tesr.drawEdges();
+        }*/
+
     }
 
     if (settings.showGregoryPatch) {
-        gregr.draw();
+        gregQuadr.draw();
+        //gregTrir.draw();
     }
 
 }

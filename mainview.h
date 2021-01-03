@@ -9,9 +9,13 @@
 
 #include "mesh.h"
 #include "meshrenderer.h"
+#include "meshrenderer_regular_quads.h"
+#include "meshrenderer_irregular_quads.h"
+#include "meshrenderer_triangles.h"
 #include "limitrenderer.h"
 #include "tessellationrenderer.h"
-#include "gregoryrenderer.h"
+#include "gregoryrenderer_quad.h"
+#include "gregoryrenderer_triangle.h"
 
 class MainView : public QOpenGLWidget, protected QOpenGLFunctions_4_1_Core {
 
@@ -48,9 +52,13 @@ private:
   bool dragging;
 
   MeshRenderer mr;
+  MeshRendererRegularQuads regularQuadmr;
+  MeshRendererIrregularQuads irregularQuadmr;
+  MeshRendererTriangles trianglemr;
   LimitRenderer limr;
   TessellationRenderer tesr;
-  GregoryRenderer gregr;
+  GregoryRendererQuad gregQuadr;
+  GregoryRendererQuad gregTrir;
 
   //we make mainwindow a friend so it can access settings and the currentMesh
   friend class MainWindow;

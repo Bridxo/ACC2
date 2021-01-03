@@ -127,6 +127,7 @@ Mesh::~Mesh() {
 
 void Mesh::extractAttributes() {
     HalfEdge* currentEdge;
+    Face* currentFace;
 
     vertexCoords.clear();
     vertexCoords.reserve(vertices.size());
@@ -163,24 +164,70 @@ void Mesh::extractAttributes() {
 
     polyIndices.clear();
     polyIndices.reserve(halfEdges.size() + faces.size());
+    regularQuadIndices.clear();
+    regularQuadIndices.reserve(halfEdges.size() + faces.size());
+    irregularQuadIndices.clear();
+    irregularQuadIndices.reserve(halfEdges.size() + faces.size());
+    triangleIndices.clear();
+    triangleIndices.reserve(halfEdges.size() + faces.size());
 
     for(int k = 0; k < faces.size(); k++) {
         currentEdge = faces[k].side;
+        currentFace = &faces[k];
+        // quad
+        if (currentFace->val == 4){
+            HalfEdge* bottomEdge = currentFace->side;
+            HalfEdge* rightEdge = currentFace->side->next;
+            HalfEdge* topEdge = currentFace->side->next->next;
+            HalfEdge* leftEdge = currentFace->side->next->next->next;
+            // regular quad
+            if ( bottomEdge->target->val == 4 &&
+                 rightEdge->target->val == 4 &&
+                 topEdge->target->val == 4 &&
+                 leftEdge->target->val == 4
+                 ) {
+                regularQuadIndices.append(bottomEdge->target->index);
+                regularQuadIndices.append(rightEdge->target->index);
+                regularQuadIndices.append(topEdge->target->index);
+                regularQuadIndices.append(leftEdge->target->index);
+            }
+            // non-regular quad
+            else{
+                irregularQuadIndices.append(bottomEdge->target->index);
+                irregularQuadIndices.append(rightEdge->target->index);
+                irregularQuadIndices.append(topEdge->target->index);
+                irregularQuadIndices.append(leftEdge->target->index);
+            }
+        }
+        // triangle
+        else if (currentFace->val == 3){
+            triangleIndices.append(currentEdge->target->index);
+            triangleIndices.append(currentEdge->next->target->index);
+            triangleIndices.append(currentEdge->next->next->target->index);
+        }
+
+        // append polyIndices
         for (int m = 0; m < faces[k].val; m++) {
             polyIndices.append(currentEdge->target->index);
             currentEdge = currentEdge->next;
         }
         //append MAX_INT to signify end of face
         polyIndices.append(INT_MAX);
+        regularQuadIndices.append(INT_MAX);
+        irregularQuadIndices.append(INT_MAX);
+        triangleIndices.append(INT_MAX);
     }
 
     // compute surface patches
     computeSurfacePatches();
 
+    // compute Gregory patches
+    computeSurfacePatches_v2();
+
     if (controlPointIndices.size() != 0){
         qDebug() << "***Mesh contains regular guads***";
 
-    } else qDebug() << "***There are no guads in the mesh***";
+    } else qDebug() << "***There are no regular guads in the mesh***";
 
     /*for (unsigned int k=0; k<polyIndices.size();k++){
         qDebug() << "polyIndex is" << polyIndices[k];

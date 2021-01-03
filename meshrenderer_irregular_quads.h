@@ -1,16 +1,16 @@
-#ifndef MESHRENDERER_H
-#define MESHRENDERER_H
+#ifndef MESHRENDERER_IRREGULAR_QUADS_H
+#define MESHRENDERER_IRREGULAR_QUADS_H
 
 #include <QOpenGLShaderProgram>
 
 #include "renderer.h"
 #include "mesh.h"
 
-class MeshRenderer : public Renderer
+class MeshRendererIrregularQuads : public Renderer
 {
 public:
-    MeshRenderer();
-    ~MeshRenderer();
+    MeshRendererIrregularQuads();
+    ~MeshRendererIrregularQuads();
 
     void init(QOpenGLFunctions_4_1_Core* f, Settings* s);
 
@@ -21,17 +21,16 @@ public:
 
     void updateBuffers(Mesh& m);
     void draw();
-    void drawEdges();
 
 private:
 
     GLuint vao;
     GLuint meshCoordsBO, meshNormalsBO, meshIndexBO;
     unsigned int meshIBOSize;
-    QOpenGLShaderProgram shaderProg, shaderEdgesProg;
+    QOpenGLShaderProgram shaderProg;
 
     // Uniforms
     GLint uniModelViewMatrix, uniProjectionMatrix, uniNormalMatrix;
 };
 
-#endif // MESHRENDERER_H
+#endif // MESHRENDERER_IRREGULAR_QUADS_H

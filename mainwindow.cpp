@@ -22,6 +22,8 @@ void MainWindow::importOBJ() {
   ui->MainDisplay->settings.showSurfacePatch = false;
   ui->MainDisplay->settings.showGregoryPatch = false;
   ui->MainDisplay->settings.limitPosition = false;
+  ui->MainDisplay->settings.useDifferentColors = false;
+  ui->MainDisplay->settings.showEdges= false;
   ui->MainDisplay->update();
 
 }
@@ -42,6 +44,12 @@ void MainWindow::on_ImportOBJ_clicked() {
 
   ui->RenderMesh->setEnabled(true);
   ui->RenderMesh->setChecked(true);
+
+  ui->DiffColors->setEnabled(true);
+  ui->DiffColors->setChecked(false);
+
+  ui->Edges->setEnabled(true);
+  ui->Edges->setChecked(false);
 }
 
 void MainWindow::on_SubdivSteps_valueChanged(int value) {
@@ -78,6 +86,20 @@ void MainWindow::on_GregoryPatch_toggled(bool checked)
 {
     ui->MainDisplay->settings.showGregoryPatch = checked;
     ui->MainDisplay->settings.uniformGregUpdateRequired = true;
+    ui->MainDisplay->update();
+}
+
+void MainWindow::on_DiffColors_toggled(bool checked)
+{
+    ui->MainDisplay->settings.useDifferentColors = checked;
+    ui->MainDisplay->settings.uniformUpdateRequired = true;
+    ui->MainDisplay->update();
+}
+
+void MainWindow::on_Edges_toggled(bool checked)
+{
+    ui->MainDisplay->settings.showEdges = checked;
+    ui->MainDisplay->settings.uniformEdgesUpdateRequired = true;
     ui->MainDisplay->update();
 }
 

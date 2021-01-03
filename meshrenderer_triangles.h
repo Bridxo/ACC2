@@ -1,16 +1,16 @@
-#ifndef GREGORYRENDERER_H
-#define GREGORYRENDERER_H
+#ifndef MESHRENDERER_TRIANGLES_H
+#define MESHRENDERER_TRIANGLES_H
 
 #include <QOpenGLShaderProgram>
 
 #include "renderer.h"
 #include "mesh.h"
 
-class GregoryRenderer: public Renderer
+class MeshRendererTriangles : public Renderer
 {
 public:
-    GregoryRenderer();
-    ~GregoryRenderer();
+    MeshRendererTriangles();
+    ~MeshRendererTriangles();
 
     void init(QOpenGLFunctions_4_1_Core* f, Settings* s);
 
@@ -27,11 +27,10 @@ private:
     GLuint vao;
     GLuint meshCoordsBO, meshNormalsBO, meshIndexBO;
     unsigned int meshIBOSize;
-    QOpenGLShaderProgram shaderProg, shaderProg_tri; // quad shader and triangle shader
+    QOpenGLShaderProgram shaderProg;
 
     // Uniforms
-    GLint uniModelViewMatrix, uniProjectionMatrix, uniNormalMatrix, uniInnerLevel, uniOuterLevel;
-
+    GLint uniModelViewMatrix, uniProjectionMatrix, uniNormalMatrix;
 };
 
-#endif // GREGORYRENDERER_H
+#endif // MESHRENDERER_TRIANGLES_H

@@ -1,11 +1,11 @@
-#include "meshrenderer.h"
+#include "meshrenderer_irregular_quads.h"
 
-MeshRenderer::MeshRenderer()
+MeshRendererIrregularQuads::MeshRendererIrregularQuads()
 {
     meshIBOSize = 0;
 }
 
-MeshRenderer::~MeshRenderer() {
+MeshRendererIrregularQuads::~MeshRendererIrregularQuads() {
     gl->glDeleteVertexArrays(1, &vao);
 
     gl->glDeleteBuffers(1, &meshCoordsBO);
@@ -13,7 +13,7 @@ MeshRenderer::~MeshRenderer() {
     gl->glDeleteBuffers(1, &meshIndexBO);
 }
 
-void MeshRenderer::init(QOpenGLFunctions_4_1_Core* f, Settings* s) {
+void MeshRendererIrregularQuads::init(QOpenGLFunctions_4_1_Core* f, Settings* s) {
     gl = f;
     settings = s;
 
@@ -21,10 +21,10 @@ void MeshRenderer::init(QOpenGLFunctions_4_1_Core* f, Settings* s) {
     initBuffers();
 }
 
-void MeshRenderer::initShaders() {
+void MeshRendererIrregularQuads::initShaders() {
     shaderProg.create();
     shaderProg.addShaderFromSourceFile(QOpenGLShader::Vertex, ":/shaders/vertshader.glsl");
-    shaderProg.addShaderFromSourceFile(QOpenGLShader::Fragment, ":/shaders/fragshader.glsl");
+    shaderProg.addShaderFromSourceFile(QOpenGLShader::Fragment, ":/shaders/fragshader_irregular_quads.glsl");
 
     shaderProg.link();
 
@@ -32,16 +32,10 @@ void MeshRenderer::initShaders() {
     uniProjectionMatrix = gl->glGetUniformLocation(shaderProg.programId(), "projectionmatrix");
     uniNormalMatrix = gl->glGetUniformLocation(shaderProg.programId(), "normalmatrix");
 
-    shaderEdgesProg.create();
-    shaderEdgesProg.addShaderFromSourceFile(QOpenGLShader::Vertex, ":/shaders/vertshader.glsl");
-    shaderEdgesProg.addShaderFromSourceFile(QOpenGLShader::Fragment, ":/shaders/fragshaderEdges.glsl");
-
-    shaderEdgesProg.link();
-
 
 }
 
-void MeshRenderer::initBuffers() {
+void MeshRendererIrregularQuads::initBuffers() {
 
     gl->glGenVertexArrays(1, &vao);
     gl->glBindVertexArray(vao);
@@ -63,7 +57,7 @@ void MeshRenderer::initBuffers() {
 
 }
 
-void MeshRenderer::updateBuffers(Mesh& currentMesh) {
+void MeshRendererIrregularQuads::updateBuffers(Mesh& currentMesh) {
 
     qDebug() << ".. updateBuffers";
 
@@ -72,10 +66,10 @@ void MeshRenderer::updateBuffers(Mesh& currentMesh) {
     QVector<QVector3D>& vertexCoords = currentMesh.getVertexCoords();
     QVector<QVector3D>& vertexNormals = currentMesh.getVertexNorms();
 
-    QVector<unsigned int>& polyIndices = currentMesh.getPolyIndices();
+    QVector<unsigned int>& irregularQuadIndices = currentMesh.getIrregularQuadIndices();
 
     qDebug() << "vertexCoords size" << vertexCoords.size();
-    qDebug() << "polyIndices size" << polyIndices.size();
+    qDebug() << "regularQuadIndices size" << irregularQuadIndices.size();
 
     gl->glBindBuffer(GL_ARRAY_BUFFER, meshCoordsBO);
     gl->glBufferData(GL_ARRAY_BUFFER, sizeof(QVector3D)*vertexCoords.size(), vertexCoords.data(), GL_DYNAMIC_DRAW);
@@ -88,26 +82,27 @@ void MeshRenderer::updateBuffers(Mesh& currentMesh) {
     qDebug() << " → Updated meshNormalsBO";
 
     gl->glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, meshIndexBO);
-    gl->glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(unsigned int)*polyIndices.size(), polyIndices.data(), GL_DYNAMIC_DRAW);
+    gl->glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(unsigned int)*irregularQuadIndices.size(), irregularQuadIndices.data(), GL_DYNAMIC_DRAW);
 
     qDebug() << " → Updated meshIndexBO";
 
-    meshIBOSize = polyIndices.size();
+    meshIBOSize = irregularQuadIndices.size();
 }
 
-void MeshRenderer::updateUniforms() {
-    //qDebug() << "###update uniforms in meshrenderer###";
+void MeshRendererIrregularQuads::updateUniforms() {
+    //qDebug() << "###update uniforms in irregular meshrenderer###";
     gl->glUniformMatrix4fv(uniModelViewMatrix, 1, false, settings->modelViewMatrix.data());
     gl->glUniformMatrix4fv(uniProjectionMatrix, 1, false, settings->projectionMatrix.data());
     gl->glUniformMatrix3fv(uniNormalMatrix, 1, false, settings->normalMatrix.data());
 }
 
-void MeshRenderer::draw() {
+void MeshRendererIrregularQuads::draw() {
+    qDebug() << "***draw irregular quads***";
     shaderProg.bind();
 
     if (settings->uniformUpdateRequired) {
         updateUniforms();
-        settings->uniformUpdateRequired = false;
+        //settings->uniformUpdateRequired = false;
     }
 
     //enable primitive restart
@@ -125,31 +120,6 @@ void MeshRenderer::draw() {
     gl->glBindVertexArray(0);
 
     shaderProg.release();
-
-    //disable it again as you might want to draw something else at some point
-    gl->glDisable(GL_PRIMITIVE_RESTART);
-
-}
-
-void MeshRenderer::drawEdges() {
-    shaderEdgesProg.bind();
-
-    if (settings->uniformEdgesUpdateRequired) {
-        updateUniforms();
-        settings->uniformEdgesUpdateRequired = false;
-    }
-
-    //enable primitive restart
-    gl->glEnable(GL_PRIMITIVE_RESTART);
-    gl->glPrimitiveRestartIndex(INT_MAX);
-
-    gl->glBindVertexArray(vao);
-
-    gl->glDrawElements(GL_LINE_LOOP, meshIBOSize, GL_UNSIGNED_INT, 0);
-
-    gl->glBindVertexArray(0);
-
-    shaderEdgesProg.release();
 
     //disable it again as you might want to draw something else at some point
     gl->glDisable(GL_PRIMITIVE_RESTART);

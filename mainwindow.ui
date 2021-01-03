@@ -66,7 +66,7 @@ QGroupBox::title {
        <property name="geometry">
         <rect>
          <x>20</x>
-         <y>260</y>
+         <y>300</y>
          <width>181</width>
          <height>29</height>
         </rect>
@@ -89,7 +89,7 @@ QGroupBox::title {
        <property name="geometry">
         <rect>
          <x>20</x>
-         <y>230</y>
+         <y>270</y>
          <width>181</width>
          <height>20</height>
         </rect>
@@ -204,6 +204,38 @@ QGroupBox::title {
        </property>
        <property name="text">
         <string>Tessellation Level</string>
+       </property>
+      </widget>
+      <widget class="QCheckBox" name="DiffColors">
+       <property name="enabled">
+        <bool>false</bool>
+       </property>
+       <property name="geometry">
+        <rect>
+         <x>30</x>
+         <y>200</y>
+         <width>151</width>
+         <height>21</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>Quads and Triangles</string>
+       </property>
+      </widget>
+      <widget class="QCheckBox" name="Edges">
+       <property name="enabled">
+        <bool>false</bool>
+       </property>
+       <property name="geometry">
+        <rect>
+         <x>30</x>
+         <y>230</y>
+         <width>151</width>
+         <height>21</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>Edges</string>
        </property>
       </widget>
      </widget>

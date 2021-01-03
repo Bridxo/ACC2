@@ -1,6 +1,13 @@
 #version 400 core
 //Tessellation Evaluation Shader
 
+
+//Patch Structure
+// p0  e0- e3+  p3
+// e0+ F0  F3   e3-
+// e1- F1  F2   e2+
+// p1  e1+ e2-  p2
+
 layout(quads, equal_spacing, ccw) in ;
 
 in vec3[] vertcoords_es;
@@ -33,22 +40,22 @@ vec3 calcPos(float u, float v) {
 
     return B0(u) * B0(v) * vertcoords_es[0] +
            B1(u) * B0(v) * vertcoords_es[4] +
-           B2(u) * B0(v) * vertcoords_es[7] +
-           B3(u) * B0(v) * vertcoords_es[1] +
+           B2(u) * B0(v) * vertcoords_es[10] +
+           B3(u) * B0(v) * vertcoords_es[3] +
 
-           B0(u) * B1(v) * vertcoords_es[5] +
+           B0(u) * B1(v) * vertcoords_es[4] +
            B1(u) * B1(v) * F0 +
-           B2(u) * B1(v) * F1 +
-           B3(u) * B1(v) * vertcoords_es[6] +
+           B2(u) * B1(v) * F3 +
+           B3(u) * B1(v) * vertcoords_es[11] +
 
-           B0(u) * B2(v) * vertcoords_es[10] +
-           B1(u) * B2(v) * F3 +
+           B0(u) * B2(v) * vertcoords_es[7] +
+           B1(u) * B2(v) * F1 +
            B2(u) * B2(v) * F2 +
-           B3(u) * B2(v) * vertcoords_es[9] +
+           B3(u) * B2(v) * vertcoords_es[8] +
 
-           B0(u) * B3(v) * vertcoords_es[3] +
-           B1(u) * B3(v) * vertcoords_es[11] +
-           B2(u) * B3(v) * vertcoords_es[8] +
+           B0(u) * B3(v) * vertcoords_es[1] +
+           B1(u) * B3(v) * vertcoords_es[6] +
+           B2(u) * B3(v) * vertcoords_es[9] +
            B3(u) * B3(v) * vertcoords_es[2];
      }
 

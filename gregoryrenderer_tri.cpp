@@ -1,11 +1,11 @@
-#include "gregoryrenderer.h"
+#include "gregoryrenderer_triangle.h"
 
-GregoryRenderer::GregoryRenderer()
+GregoryRendererTriangle::GregoryRendererTriangle()
 {
     meshIBOSize = 0;
 }
 
-GregoryRenderer::~GregoryRenderer() {
+GregoryRendererTriangle::~GregoryRendererTriangle() {
     gl->glDeleteVertexArrays(1, &vao);
 
     gl->glDeleteBuffers(1, &meshCoordsBO);
@@ -13,7 +13,7 @@ GregoryRenderer::~GregoryRenderer() {
     gl->glDeleteBuffers(1, &meshIndexBO);
 }
 
-void GregoryRenderer::init(QOpenGLFunctions_4_1_Core* f, Settings* s) {
+void GregoryRendererTriangle::init(QOpenGLFunctions_4_1_Core* f, Settings* s) {
     gl = f;
     settings = s;
 
@@ -21,13 +21,13 @@ void GregoryRenderer::init(QOpenGLFunctions_4_1_Core* f, Settings* s) {
     initBuffers();
 }
 
-void GregoryRenderer::initShaders() {
+void GregoryRendererTriangle::initShaders() {
     shaderProg.create();
 
     shaderProg.addShaderFromSourceFile(QOpenGLShader::Vertex, ":/shaders/vertshader_surface.glsl");
-    shaderProg.addShaderFromSourceFile(QOpenGLShader::TessellationControl, ":/shaders/tcs.glsl");
-    shaderProg.addShaderFromSourceFile(QOpenGLShader::TessellationEvaluation, ":/shaders/tes.glsl");
-    shaderProg.addShaderFromSourceFile(QOpenGLShader::Fragment, ":/shaders/fragshader_greg_tri.glsl");
+    shaderProg.addShaderFromSourceFile(QOpenGLShader::TessellationControl, ":/shaders/tcs_quad.glsl");
+    shaderProg.addShaderFromSourceFile(QOpenGLShader::TessellationEvaluation, ":/shaders/tes_quad.glsl");
+    shaderProg.addShaderFromSourceFile(QOpenGLShader::Fragment, ":/shaders/fragshader_greg_quad.glsl");
 
     shaderProg.link();
 
@@ -40,7 +40,7 @@ void GregoryRenderer::initShaders() {
 
 }
 
-void GregoryRenderer::initBuffers() {
+void GregoryRendererTriangle::initBuffers() {
 
     //create vao
     gl->glGenVertexArrays(1, &vao);
@@ -70,37 +70,28 @@ void GregoryRenderer::initBuffers() {
 
 }
 
-void GregoryRenderer::updateBuffers(Mesh& currentMesh) {
+void GregoryRendererTriangle::updateBuffers(Mesh& currentMesh) {
 
     qDebug() << ".. updateBuffers";
 
     //gather attributes for current mesh
     currentMesh.extractAttributes();
-    QVector<QVector3D>& vertexCoords = currentMesh.getVertexLimitCoords();
-    QVector<QVector3D>& vertexNormals = currentMesh.getVertexLimitNorms();
-    QVector<unsigned int>& controlPointIndices = currentMesh.getControlPointIndices();
+    QVector<QVector3D>& vertexGregoryQuadCoords = currentMesh.getVertexGregoryQuadCoords();
+    QVector<QVector3D>& vertexGregoryTriCoords = currentMesh.getVertexGregoryTriCoords();
+    //QVector<QVector3D>& vertexNormals = currentMesh.getVertexNorms();
+    //QVector<unsigned int>& controlPointIndices = currentMesh.getControlPointIndices();
 
-    qDebug() << "controlPointIndices size" << controlPointIndices.size();
+    //qDebug() << "controlPointIndices size" << controlPointIndices.size();
 
     gl->glBindBuffer(GL_ARRAY_BUFFER, meshCoordsBO);
-    gl->glBufferData(GL_ARRAY_BUFFER, sizeof(QVector3D)*vertexCoords.size(), vertexCoords.data(), GL_DYNAMIC_DRAW);
+    gl->glBufferData(GL_ARRAY_BUFFER, sizeof(QVector3D)*vertexGregoryQuadCoords.size(), vertexGregoryQuadCoords.data(), GL_DYNAMIC_DRAW);
 
     qDebug() << " → Updated meshCoordsBO for tessellation";
 
-    gl->glBindBuffer(GL_ARRAY_BUFFER, meshNormalsBO);
-    gl->glBufferData(GL_ARRAY_BUFFER, sizeof(QVector3D)*vertexNormals.size(), vertexNormals.data(), GL_DYNAMIC_DRAW);
-
-    qDebug() << " → Updated meshNormalsBO for tessellation";
-
-    gl->glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, meshIndexBO);
-    gl->glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(unsigned int)*controlPointIndices.size(), controlPointIndices.data(), GL_DYNAMIC_DRAW);
-
-    qDebug() << " → Updated meshIndexBO for tessellation";
-
-    meshIBOSize = controlPointIndices.size();
+    meshIBOSize = vertexGregoryQuadCoords.size();
 }
 
-void GregoryRenderer::updateUniforms() {
+void GregoryRendererTriangle::updateUniforms() {
     gl->glUniformMatrix4fv(uniModelViewMatrix, 1, false, settings->modelViewMatrix.data());
     gl->glUniformMatrix4fv(uniProjectionMatrix, 1, false, settings->projectionMatrix.data());
     gl->glUniformMatrix3fv(uniNormalMatrix, 1, false, settings->normalMatrix.data());
@@ -109,7 +100,7 @@ void GregoryRenderer::updateUniforms() {
     gl->glUniform1f(uniOuterLevel, float(settings->tess_level)); // for the outer tessellation
 }
 
-void GregoryRenderer::draw() {
+void GregoryRendererTriangle::draw() {
 
     shaderProg.bind();
 
@@ -118,23 +109,15 @@ void GregoryRenderer::draw() {
         settings->uniformGregUpdateRequired = false;
     }
 
-    //enable primitive restart
-    gl->glEnable(GL_PRIMITIVE_RESTART);
-    gl->glPrimitiveRestartIndex(INT_MAX);
-
     gl->glBindVertexArray(vao);
 
-    // set number of input vertices to 16
-
-    // tried to render the regular quads using this, but it doesn't work
-    gl->glPatchParameteri(GL_PATCH_VERTICES, 16);
+    // set number of input vertices to 15
+    gl->glPatchParameteri(GL_PATCH_VERTICES, 15);
     gl->glDrawElements(GL_PATCHES, meshIBOSize, GL_UNSIGNED_INT, 0);
     gl->glBindVertexArray(0);
 
     shaderProg.release();
 
-    //disable it again as you might want to draw something else at some point
-    gl->glDisable(GL_PRIMITIVE_RESTART);
 }
 
 
