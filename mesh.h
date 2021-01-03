@@ -27,8 +27,8 @@ public:
     inline QVector<QVector3D>& getVertexNorms() { return vertexNormals; }
     inline QVector<QVector3D>& getVertexLimitCoords() { return vertexLimitCoords; } //array of vertex limit positions
     inline QVector<QVector3D>& getVertexLimitNorms() { return vertexLimitNormals; } //array of normals of vertex limit positions
-//    inline QVector<QVector3D>& getVertexGregoryQuadCoords() { return vertexGregoryQuadCoords; }
-//    inline QVector<QVector3D>& getVertexGregoryTriCoords() { return vertexGregoryTriCoords; }
+    inline QVector<QVector3D>& getVertexGregoryQuadCoords() { return vertexGregoryQuadCoords; }
+    inline QVector<QVector3D>& getVertexGregoryTriCoords() { return vertexGregoryTriCoords; }
     inline QVector<QVector3D>& getVertexGregoryCoords() { return vertexGregoryCoords; }
     inline QVector<unsigned int>& getRegularQuadIndices() { return regularQuadIndices; } //array of indices for regular quads
     inline QVector<unsigned int>& getIrregularQuadIndices() { return irregularQuadIndices; } //array of indices for non-regular quads
