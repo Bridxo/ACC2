@@ -81,7 +81,7 @@ void TessellationRenderer::updateBuffers(Mesh& currentMesh) {
     QVector<QVector3D>& vertexSurfaceCoords = currentMesh.getVertexSurfaceCoords(); //to test
     QVector<unsigned int>& controlPointIndices = currentMesh.getControlPointIndices();
 
-    qDebug() << "controlPointIndices size" << controlPointIndices.size();
+//    qDebug() << "controlPointIndices size" << controlPointIndices.size();
 
     gl->glBindBuffer(GL_ARRAY_BUFFER, meshCoordsBO);
     //gl->glBufferData(GL_ARRAY_BUFFER, sizeof(QVector3D)*vertexCoords.size(), vertexCoords.data(), GL_DYNAMIC_DRAW);

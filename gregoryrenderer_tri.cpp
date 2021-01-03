@@ -76,8 +76,8 @@ void GregoryRendererTriangle::updateBuffers(Mesh& currentMesh) {
 
     //gather attributes for current mesh
     currentMesh.extractAttributes();
-    QVector<QVector3D>& vertexGregoryQuadCoords = currentMesh.getVertexGregoryQuadCoords();
-    QVector<QVector3D>& vertexGregoryTriCoords = currentMesh.getVertexGregoryTriCoords();
+    QVector<QVector3D>& vertexGregoryQuadCoords = currentMesh.getVertexGregoryCoords();
+    QVector<QVector3D>& vertexGregoryTriCoords = currentMesh.getVertexGregoryCoords();
     //QVector<QVector3D>& vertexNormals = currentMesh.getVertexNorms();
     //QVector<unsigned int>& controlPointIndices = currentMesh.getControlPointIndices();
 
