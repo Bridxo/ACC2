@@ -53,8 +53,8 @@ void GregoryRendererQuad::initBuffers() {
     //tell the currently bound vao what the layout is of the meshCoordsBO
     gl->glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, 0);
 
-    gl->glGenBuffers(1, &meshIndexBO);
-    gl->glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, meshIndexBO);
+//    gl->glGenBuffers(1, &meshIndexBO);
+//    gl->glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, meshIndexBO);
 
     //unbind
     gl->glBindVertexArray(0);

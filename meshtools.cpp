@@ -427,8 +427,8 @@ QVector<QVector3D> Mesh:: cal_q(int val, QVector<QVector3D> m, QVector<QVector3D
         q[1] = q[1] + (((1.0- theta * cos(M_PI/float(val)))*cos(2.0*float(q_mod)*M_PI/float(val))* m[i])    // q -
               + (2.0 * theta * cos(2.0*float(q_mod)*M_PI/float(val)) * c[i]));
     }
-    q[0] = 2/val * q[0];
-    q[1] = 2/val * q[1];
+    q[0] = 2/float(val) * q[0];
+    q[1] = 2/float(val) * q[1];
 
     //qDebug() << "q values" << q;
     return q;
