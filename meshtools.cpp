@@ -420,7 +420,7 @@ QVector<QVector3D> Mesh:: cal_q(int val, QVector<QVector3D> m, QVector<QVector3D
     q.append(QVector3D());
     q.append(QVector3D());
     //qDebug() << "q values" << q;
-    float theta = pow(4 + pow(cos(M_PI/val),2),-0.5);
+    float theta = pow(4 + pow(cos(M_PI/float(val)),2),-0.5);
     //qDebug() << "theta" <<theta;
     //qDebug() << "M_PI" << M_PI;
     for(int i = 0 ; i<val ; i++)
