@@ -314,10 +314,10 @@ void Mesh::computeSurfacePatches_v2() { // triangle, quad, but without boundarie
 //            GregoryQuadPointIndices.append(MAX_INT);
 
 
-            vertexGregoryQuadCoords.append(vertexLimitCoords(currentEdge->target->index));                      //p0
-            vertexGregoryQuadCoords.append(vertexLimitCoords(currentEdge->next->target->coords));               //p1
-            vertexGregoryQuadCoords.append(vertexLimitCoords(currentEdge->next->next->target->coords));         //p2
-            vertexGregoryQuadCoords.append(vertexLimitCoords(currentEdge->next->next->next->target->coords));   //p3
+            vertexGregoryQuadCoords.append(vertexLimitCoords[currentEdge->target->index]);                      //p0
+            vertexGregoryQuadCoords.append(vertexLimitCoords[currentEdge->next->target->index]);               //p1
+            vertexGregoryQuadCoords.append(vertexLimitCoords[currentEdge->next->next->target->index]);         //p2
+            vertexGregoryQuadCoords.append(vertexLimitCoords[currentEdge->next->next->next->target->index]);   //p3
 
             vertexGregoryQuadCoords.append(e[0]);                                               //coord add e0+
             vertexGregoryQuadCoords.append(e[1]);                                               //coord add e0-
@@ -374,9 +374,9 @@ void Mesh::computeSurfacePatches_v2() { // triangle, quad, but without boundarie
 //            GregoryTriPointIndices.append(MAX_IND++);
 //            GregoryTriPointIndices.append(MAX_INT);
 
-            vertexGregoryTriCoords.append(vertexLimitCoords(currentEdge->target->coords));                     //p0
-            vertexGregoryTriCoords.append(vertexLimitCoords(currentEdge->next->target->coords));               //p1
-            vertexGregoryTriCoords.append(vertexLimitCoords(currentEdge->next->next->target->coords));         //p2
+            vertexGregoryTriCoords.append(vertexLimitCoords[currentEdge->target->index]);                     //p0
+            vertexGregoryTriCoords.append(vertexLimitCoords[currentEdge->next->target->index]);               //p1
+            vertexGregoryTriCoords.append(vertexLimitCoords[currentEdge->next->next->target->index]);         //p2
 
             vertexGregoryTriCoords.append(e[0]);                                               //coord add e0+
             vertexGregoryTriCoords.append(e[1]);                                               //coord add e0-
