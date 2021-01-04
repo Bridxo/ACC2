@@ -172,7 +172,7 @@ void Mesh::computeSurfacePatches_v2() { // triangle, quad, but without boundarie
         Face* currentFace = &faces[k];
         n = currentFace->val;
         HalfEdge* bottomEdge = currentFace->side;
-        HalfEdge* leftEdge = currentFace->side->next->next->next;
+        HalfEdge* leftEdge = currentFace->side->prev;
         HalfEdge* currentEdge = bottomEdge;
         Vertex* currentVertex = leftEdge->target;
         int currentVertex_ind = currentVertex->index;
@@ -222,7 +222,7 @@ void Mesh::computeSurfacePatches_v2() { // triangle, quad, but without boundarie
                 }*/
 
 
-                m.append( 0.5 * currentVertex->coords + 0.5 * currentEdge->target->coords);
+                m.append( 0.5 * currentVertex->coords + 0.5 * currentEdge->next->target->coords);
                 c.append(centroid/float(shape));
 
                 currentEdge = currentEdge->twin->next; // move to next neighbor edge
@@ -231,10 +231,10 @@ void Mesh::computeSurfacePatches_v2() { // triangle, quad, but without boundarie
             //qDebug()<<"calculate Edge points";
             float lambda = cal_lambda(currentVertex->val);
             QVector<QVector3D> q = cal_q(currentVertex->val,m,c);
-            e.append((vertexLimitCoords[currentVertex_ind]) + ((2.0 / 3.0) * lambda * q[0])); //e+
-            e.append((vertexLimitCoords[currentVertex_ind]) + ((2.0 / 3.0) * lambda * q[1])); //e-
-            //e.append((vertexLimitCoords[currentVertex_ind]) + ((2.0 / 3.0) * lambda * q[0])); //e- to test the tessellation because e- returns NaN value
-
+//            e.append((vertexLimitCoords[currentVertex_ind]) + ((2.0 / 3.0) * lambda * q[0])); //e+
+//            e.append((vertexLimitCoords[currentVertex_ind]) + ((2.0 / 3.0) * lambda * q[1])); //e-
+            e.append((vertexCoords[currentVertex_ind]) + ((2.0 / 3.0) * lambda * q[0])); //e+ test_coord
+            e.append((vertexCoords[currentVertex_ind]) + ((2.0 / 3.0) * lambda * q[1])); //e- test_coord
             //calculate r values
             QVector<QVector3D> temp_r = cal_r(m,c);
             r.append(temp_r[0]);
@@ -264,8 +264,11 @@ void Mesh::computeSurfacePatches_v2() { // triangle, quad, but without boundarie
             //get face points
             int first_index = (2*f_ind+3)% arr_size;
             int secont_index = (2*f_ind+6)% arr_size;
-            f.append((1.0/ d) * ((c_scaler_1 * vertexLimitCoords[currentVertex_ind]) + ((d - (2.0 * c_scaler_0) - c_scaler_1) * e[2*f_ind]) + ((2.0 * c_scaler_0) * e[first_index]) + r[2*f_ind]));
-            f.append((1.0/ d) * ((c_scaler_0 * vertexLimitCoords[currentVertex_ind]) + ((d - (2.0 * c_scaler_1) - c_scaler_0) * e[2*f_ind+1]) + ((2.0 * c_scaler_1) * e[secont_index]) + r[2*f_ind+1]));
+//            f.append((1.0/ d) * ((c_scaler_1 * vertexLimitCoords[currentVertex_ind]) + ((d - (2.0 * c_scaler_0) - c_scaler_1) * e[2*f_ind]) + ((2.0 * c_scaler_0) * e[first_index]) + r[2*f_ind]));
+//            f.append((1.0/ d) * ((c_scaler_0 * vertexLimitCoords[currentVertex_ind]) + ((d - (2.0 * c_scaler_1) - c_scaler_0) * e[2*f_ind+1]) + ((2.0 * c_scaler_1) * e[secont_index]) + r[2*f_ind+1]));
+
+            f.append((1.0/ d) * ((c_scaler_1 * vertexCoords[currentVertex_ind]) + ((d - (2.0 * c_scaler_0) - c_scaler_1) * e[2*f_ind]) + ((2.0 * c_scaler_0) * e[first_index]) + r[2*f_ind]));//test
+            f.append((1.0/ d) * ((c_scaler_0 * vertexCoords[currentVertex_ind]) + ((d - (2.0 * c_scaler_1) - c_scaler_0) * e[2*f_ind+1]) + ((2.0 * c_scaler_1) * e[secont_index]) + r[2*f_ind+1]));//test
             currentEdge = currentEdge->next; //move to next vertex point
         }
 
