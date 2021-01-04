@@ -185,7 +185,13 @@ void Mesh::computeSurfacePatches_v2() { // triangle, quad, but without boundarie
             //qDebug()<<"The face is not a quad or triangle";
         }
 
-        //normal case
+        //normal case (irregular)
+        if( (n == 4 && !(
+                    currentEdge->target->val == 4 &&
+                    currentEdge->next->target->val == 4 &&
+                    currentEdge->next->next->target->val == 4 &&
+                    currentEdge->next->next->next->target->val == 4)
+                     ) || n == 3 ){
         for (int v_ind=0;v_ind< n ;v_ind++){
             // find Vertex related mid edge points and face center points
             // this can be optimized with --> set m, c into the vertex class (once per vertex to calculate) but need to know which edge is connected m and c
@@ -395,6 +401,7 @@ void Mesh::computeSurfacePatches_v2() { // triangle, quad, but without boundarie
     } // Looping on all Faces
 
     qDebug() << "Finished calculating Gregory patches";
+    }
 }
 
 
