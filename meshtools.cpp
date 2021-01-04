@@ -189,9 +189,9 @@ void Mesh::computeSurfacePatches_v2() { // triangle, quad, but without boundarie
         for (int v_ind=0;v_ind< n ;v_ind++){
             // find Vertex related mid edge points and face center points
             // this can be optimized with --> set m, c into the vertex class (once per vertex to calculate) but need to know which edge is connected m and c
-            QVector<QVector3D> m, c;
-            m.reserve(currentVertex->val);
-            c.reserve(currentVertex->val);
+            QVector<QVector3D> m(currentVertex->val), c(currentVertex->val);
+//            m.reserve(currentVertex->val);
+//            c.reserve(currentVertex->val);
 
             //qDebug()<<"m size" << m.size();
             //qDebug()<<"c size" << c.size();
@@ -207,11 +207,12 @@ void Mesh::computeSurfacePatches_v2() { // triangle, quad, but without boundarie
 
                 for(int idx = 0;idx<shape-1;idx++)
                 {
+//                    qDebug()<<"FACE coords - "<< find_centroid->target->coords;
                     centroid = centroid + find_centroid->target->coords;
                     find_centroid=find_centroid->next;
                 }
-                //calculate Edge mid point M
-                /*
+//                qDebug()<<"Connected vertex - "<< currentEdge->target->coords;
+                //calculate Edge mid point M -- need i indexing for right ordering first ->0 next-> n ...(CCW)
                 if(i==currentVertex->val){
                     m[0] = (0.5 * currentVertex->coords + 0.5 * currentEdge->target->coords);
                     c[0] = (centroid/float(shape));
@@ -219,11 +220,7 @@ void Mesh::computeSurfacePatches_v2() { // triangle, quad, but without boundarie
                 else{
                     m[i] = (0.5 * currentVertex->coords + 0.5 * currentEdge->target->coords);
                     c[i] = (centroid/float(shape));
-                }*/
-
-
-                m.append( 0.5 * currentVertex->coords + 0.5 * currentEdge->next->target->coords);
-                c.append(centroid/float(shape));
+                }
 
                 currentEdge = currentEdge->twin->next; // move to next neighbor edge
             }
@@ -231,10 +228,10 @@ void Mesh::computeSurfacePatches_v2() { // triangle, quad, but without boundarie
             //qDebug()<<"calculate Edge points";
             float lambda = cal_lambda(currentVertex->val);
             QVector<QVector3D> q = cal_q(currentVertex->val,m,c);
-//            e.append((vertexLimitCoords[currentVertex_ind]) + ((2.0 / 3.0) * lambda * q[0])); //e+
-//            e.append((vertexLimitCoords[currentVertex_ind]) + ((2.0 / 3.0) * lambda * q[1])); //e-
-            e.append((vertexCoords[currentVertex_ind]) + ((2.0 / 3.0) * lambda * q[0])); //e+ test_coord
-            e.append((vertexCoords[currentVertex_ind]) + ((2.0 / 3.0) * lambda * q[1])); //e- test_coord
+            e.append((vertexLimitCoords[currentVertex_ind]) + ((2.0 / 3.0) * lambda * q[0])); //e+
+            e.append((vertexLimitCoords[currentVertex_ind]) + ((2.0 / 3.0) * lambda * q[1])); //e-
+//            e.append((vertexCoords[currentVertex_ind]) + ((2.0 / 3.0) * lambda * q[0])); //e+ test_coord
+//            e.append((vertexCoords[currentVertex_ind]) + ((2.0 / 3.0) * lambda * q[1])); //e- test_coord
             //calculate r values
             QVector<QVector3D> temp_r = cal_r(m,c);
             r.append(temp_r[0]);
@@ -264,11 +261,11 @@ void Mesh::computeSurfacePatches_v2() { // triangle, quad, but without boundarie
             //get face points
             int first_index = (2*f_ind+3)% arr_size;
             int secont_index = (2*f_ind+6)% arr_size;
-//            f.append((1.0/ d) * ((c_scaler_1 * vertexLimitCoords[currentVertex_ind]) + ((d - (2.0 * c_scaler_0) - c_scaler_1) * e[2*f_ind]) + ((2.0 * c_scaler_0) * e[first_index]) + r[2*f_ind]));
-//            f.append((1.0/ d) * ((c_scaler_0 * vertexLimitCoords[currentVertex_ind]) + ((d - (2.0 * c_scaler_1) - c_scaler_0) * e[2*f_ind+1]) + ((2.0 * c_scaler_1) * e[secont_index]) + r[2*f_ind+1]));
+            f.append((1.0/ d) * ((c_scaler_1 * vertexLimitCoords[currentVertex_ind]) + ((d - (2.0 * c_scaler_0) - c_scaler_1) * e[2*f_ind]) + ((2.0 * c_scaler_0) * e[first_index]) + r[2*f_ind]));
+            f.append((1.0/ d) * ((c_scaler_0 * vertexLimitCoords[currentVertex_ind]) + ((d - (2.0 * c_scaler_1) - c_scaler_0) * e[2*f_ind+1]) + ((2.0 * c_scaler_1) * e[secont_index]) + r[2*f_ind+1]));
 
-            f.append((1.0/ d) * ((c_scaler_1 * vertexCoords[currentVertex_ind]) + ((d - (2.0 * c_scaler_0) - c_scaler_1) * e[2*f_ind]) + ((2.0 * c_scaler_0) * e[first_index]) + r[2*f_ind]));//test
-            f.append((1.0/ d) * ((c_scaler_0 * vertexCoords[currentVertex_ind]) + ((d - (2.0 * c_scaler_1) - c_scaler_0) * e[2*f_ind+1]) + ((2.0 * c_scaler_1) * e[secont_index]) + r[2*f_ind+1]));//test
+//            f.append((1.0/ d) * ((c_scaler_1 * vertexCoords[currentVertex_ind]) + ((d - (2.0 * c_scaler_0) - c_scaler_1) * e[2*f_ind]) + ((2.0 * c_scaler_0) * e[first_index]) + r[2*f_ind]));//test
+//            f.append((1.0/ d) * ((c_scaler_0 * vertexCoords[currentVertex_ind]) + ((d - (2.0 * c_scaler_1) - c_scaler_0) * e[2*f_ind+1]) + ((2.0 * c_scaler_1) * e[secont_index]) + r[2*f_ind+1]));//test
             currentEdge = currentEdge->next; //move to next vertex point
         }
 
