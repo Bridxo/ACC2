@@ -42,19 +42,19 @@ void Mesh::computeSurfacePatches() {
         // determine patch for regular quads (all vertices have valency 4)
         if (n == 4) {
             //qDebug() << "found a quad, checking vertices valencies...";
-             HalfEdge* bottomEdge = currentFace->side;
+             HalfEdge* outEdge = currentFace->side;
              HalfEdge* rightEdge = currentFace->side->next;
              HalfEdge* topEdge = currentFace->side->next->next;
-             HalfEdge* leftEdge = currentFace->side->next->next->next;
-            if ( bottomEdge->target->val == 4 &&
+             HalfEdge* inEdge = currentFace->side->next->next->next;
+            if ( outEdge->target->val == 4 &&
                  rightEdge->target->val == 4 &&
                  topEdge->target->val == 4 &&
-                 leftEdge->target->val == 4
+                 inEdge->target->val == 4
                  ) {
 
                 count_quads+=1;
 
-                HalfEdge* currentEdge = leftEdge;
+                HalfEdge* currentEdge = inEdge;
 
                 // find vertices in top-left corner
                 currentEdge = currentEdge->twin->next;
@@ -80,7 +80,7 @@ void Mesh::computeSurfacePatches() {
                     }
 
                     //find vertices in bottom-left corner
-                    currentEdge = leftEdge;
+                    currentEdge = inEdge;
                     currentEdge = currentEdge->twin->next->next->next->twin;
                     controlPointIndices.append(currentEdge->target->index);
                     vertexSurfaceCoords.append(currentEdge->target->coords);
@@ -157,7 +157,10 @@ void Mesh::computeSurfacePatches_v2() { // triangle, quad, but without boundarie
     for (k=0; k<numFaces; k++) { // along with all faces
 
         //EDGE Points
+        //ver1
         QVector<QVector3D> e;
+        //ver2
+//        QVector<QVector3D> e(currentFace->val);
         e.clear(); //reset for next patch
 
         //r Points (To calculate face points)
@@ -171,10 +174,11 @@ void Mesh::computeSurfacePatches_v2() { // triangle, quad, but without boundarie
         //Basic variables initialization
         Face* currentFace = &faces[k];
         n = currentFace->val;
-        HalfEdge* bottomEdge = currentFace->side;
-        HalfEdge* leftEdge = currentFace->side->prev;
-        HalfEdge* currentEdge = bottomEdge;
-        Vertex* currentVertex = leftEdge->target;
+
+        HalfEdge* outEdge = currentFace->side;
+        HalfEdge* inEdge = currentFace->side->prev;
+        HalfEdge* currentEdge = outEdge;
+        Vertex* currentVertex = inEdge->target;
         int currentVertex_ind = currentVertex->index;
 
 
@@ -184,7 +188,7 @@ void Mesh::computeSurfacePatches_v2() { // triangle, quad, but without boundarie
         if(n != 4 && n != 3) {
             //qDebug()<<"The face is not a quad or triangle";
         }
-
+        qDebug()<<currentEdge->target->index<<currentEdge->next->target->index<<currentEdge->next->next->target->index;
         //normal case (irregular)
         if( (n == 4 && !(
                     currentEdge->target->val == 4 &&
@@ -192,212 +196,212 @@ void Mesh::computeSurfacePatches_v2() { // triangle, quad, but without boundarie
                     currentEdge->next->next->target->val == 4 &&
                     currentEdge->next->next->next->target->val == 4)
                      ) || n == 3 ){
-        for (int v_ind=0;v_ind< n ;v_ind++){
-            // find Vertex related mid edge points and face center points
-            // this can be optimized with --> set m, c into the vertex class (once per vertex to calculate) but need to know which edge is connected m and c
-            QVector<QVector3D> m(currentVertex->val), c(currentVertex->val);
-//            m.reserve(currentVertex->val);
-//            c.reserve(currentVertex->val);
+            for (int v_ind=0;v_ind< n ;v_ind++){
+                // find Vertex related mid edge points and face center points
+                // this can be optimized with --> set m, c into the vertex class (once per vertex to calculate) but need to know which edge is connected m and c
+                QVector<QVector3D> m(currentVertex->val), c(currentVertex->val);
+    //            m.reserve(currentVertex->val);
+    //            c.reserve(currentVertex->val);
 
-            //qDebug()<<"m size" << m.size();
-            //qDebug()<<"c size" << c.size();
-
-            for(i=currentVertex->val;i > 0;i--) // looping val times on vertex (one ring neighbor) GET M and C
-            {
-                //calculate Centroid point C (Shape dependancy tri, quad)
-                //qDebug()<<"calculate Centroid point C";
-                //qDebug() <<"i = " << i;
-                int shape = currentEdge->polygon->val;
-                HalfEdge* find_centroid = currentEdge;
-                QVector3D centroid = currentVertex->coords;
-
-                for(int idx = 0;idx<shape-1;idx++)
+                //qDebug()<<"m size" << m.size();
+                //qDebug()<<"c size" << c.size();
+                HalfEdge* tempEdge = currentEdge;
+                for(i=currentVertex->val;i > 0;i--) // looping val times on vertex (one ring neighbor) GET M and C
                 {
-//                    qDebug()<<"FACE coords - "<< find_centroid->target->coords;
-                    centroid = centroid + find_centroid->target->coords;
-                    find_centroid=find_centroid->next;
-                }
-//                qDebug()<<"Connected vertex - "<< currentEdge->target->coords;
-                //calculate Edge mid point M -- need i indexing for right ordering first ->0 next-> n ...(CCW)
-                if(i==currentVertex->val){
-                    m[0] = (0.5 * currentVertex->coords + 0.5 * currentEdge->target->coords);
-                    c[0] = (centroid/float(shape));
-                }
-                else{
-                    m[i] = (0.5 * currentVertex->coords + 0.5 * currentEdge->target->coords);
-                    c[i] = (centroid/float(shape));
-                }
+                    //calculate Centroid point C (Shape dependancy tri, quad)
+                    //qDebug()<<"calculate Centroid point C";
+                    //qDebug() <<"i = " << i;
+                    int shape = tempEdge->polygon->val;
 
-                currentEdge = currentEdge->twin->next; // move to next neighbor edge
+                    HalfEdge* find_centroid = tempEdge;
+                    QVector3D centroid = currentVertex->coords;
+
+                    for(int idx = 0;idx<shape-1;idx++)
+                    {
+    //                    qDebug()<<"FACE coords - "<< find_centroid->target->coords;
+                        centroid = centroid + find_centroid->target->coords;
+                        find_centroid=find_centroid->next;
+                    }
+    //                qDebug()<<"Connected vertex - "<< currentEdge->target->coords;
+                    //calculate Edge mid point M -- need i indexing for right ordering first ->0 next-> n ...(CCW)
+                    if(i==currentVertex->val){
+                        m[0] = (0.5 * currentVertex->coords + 0.5 * currentEdge->target->coords);
+                        c[0] = (centroid/float(shape));
+                    }
+                    else {
+                        m[i] = (0.5 * currentVertex->coords + 0.5 * currentEdge->target->coords);
+                        c[i] = (centroid/float(shape));
+                    }
+
+                    tempEdge = tempEdge->twin->next; // move to next neighbor edge
+                }
+                //calculate Edge points
+                //qDebug()<<"calculate Edge points";
+                float lambda = cal_lambda(currentVertex->val);
+                QVector<QVector3D> q = cal_q(currentVertex->val,m,c);
+                qDebug()<<vertexLimitCoords[currentVertex_ind];
+                //ver1
+                e.append((vertexLimitCoords[currentVertex_ind]) + ((2.0f / 3.0f) * lambda * q[0])); //e+
+                e.append((vertexLimitCoords[currentVertex_ind]) + ((2.0f / 3.0f) * lambda * q[1])); //e-
+                //ver2
+
+                //calculate r values
+                QVector<QVector3D> temp_r = cal_r(m,c);
+                r.append(temp_r[0]);
+                r.append(temp_r[1]);
+
+                //move to next vertex point
+                currentEdge = currentEdge->next;
+                currentVertex = currentEdge->target; // move to next vertex on quad
+                currentVertex_ind = currentVertex->index;
+            } // looping over patches (one ring neighbor)
+
+
+            //calculate Face points
+            currentEdge = inEdge;
+            float d = n==4 ? 3.0f : 4.0f; // depends on the shape of the patch
+            int arr_size = n * 2;
+
+            for(int f_ind = 0 ; f_ind < n ; f_ind++){
+                //currentVertex_ind change
+                currentVertex_ind = currentEdge->target->index;
+                //calculate c0, c1
+                float c_sp_0 = float(currentEdge->target->val);
+                float c_sp_1 = float(currentEdge->next->target->val);
+                float c_scaler_0 = cos(2*M_PI/c_sp_0);
+                float c_scaler_1 = cos(2*M_PI/c_sp_1);
+
+                //get face points
+                int first_index = (2*f_ind+3)% arr_size;
+                int secont_index = (2*f_ind+6)% arr_size;
+                f.append((1.0f/ d) * ((c_scaler_1 * vertexLimitCoords[currentVertex_ind]) + ((d - (2.0f * c_scaler_0) - c_scaler_1) * e[2*f_ind]) + ((2.0f * c_scaler_0) * e[first_index]) + r[2*f_ind]));
+                f.append((1.0f/ d) * ((c_scaler_0 * vertexLimitCoords[currentVertex_ind]) + ((d - (2.0f * c_scaler_1) - c_scaler_0) * e[2*f_ind+1]) + ((2.0f * c_scaler_1) * e[secont_index]) + r[2*f_ind+1]));
+                currentEdge = currentEdge->next; //move to next vertex point
             }
-            //calculate Edge points
-            //qDebug()<<"calculate Edge points";
-            float lambda = cal_lambda(currentVertex->val);
-            QVector<QVector3D> q = cal_q(currentVertex->val,m,c);
-            e.append((vertexLimitCoords[currentVertex_ind]) + ((2.0 / 3.0) * lambda * q[0])); //e+
-            e.append((vertexLimitCoords[currentVertex_ind]) + ((2.0 / 3.0) * lambda * q[1])); //e-
-//            e.append((vertexCoords[currentVertex_ind]) + ((2.0 / 3.0) * lambda * q[0])); //e+ test_coord
-//            e.append((vertexCoords[currentVertex_ind]) + ((2.0 / 3.0) * lambda * q[1])); //e- test_coord
-            //calculate r values
-            QVector<QVector3D> temp_r = cal_r(m,c);
-            r.append(temp_r[0]);
-            r.append(temp_r[1]);
 
-            //move to next vertex point
-            currentEdge = currentEdge->next;
-            currentVertex = currentEdge->target; // move to next vertex on quad
-            currentVertex_ind = currentVertex->index;
-        } // looping over patches (one ring neighbor)
+            MAX_IND = vertexGregoryCoords.size();
+            //Add coordinates with Indexing (Edge and Face points)
+            if(n == 4){     // quad
+                currentEdge = inEdge;
+    //            GregoryQuadPointIndices.append(currentEdge->target->index);                     //p0
+    //            GregoryQuadPointIndices.append(currentEdge->next->target->index);               //p1
+    //            GregoryQuadPointIndices.append(currentEdge->next->next->target->index);         //p2
+    //            GregoryQuadPointIndices.append(currentEdge->next->next->next->target->index);   //p3
 
+    //            vertexGregoryCoords.append(e[0]);                                               //coord add e0+
+    //            GregoryQuadPointIndices.append(MAX_IND++);
+    //            vertexGregoryCoords.append(e[1]);                                               //coord add e0-
+    //            GregoryQuadPointIndices.append(MAX_IND++);
+    //            vertexGregoryCoords.append(e[2]);                                               //coord add e1+
+    //            GregoryQuadPointIndices.append(MAX_IND++);
+    //            vertexGregoryCoords.append(e[3]);                                               //coord add e1-
+    //            GregoryQuadPointIndices.append(MAX_IND++);
+    //            vertexGregoryCoords.append(e[4]);                                               //coord add e2+
+    //            GregoryQuadPointIndices.append(MAX_IND++);
+    //            vertexGregoryCoords.append(e[5]);                                               //coord add e2-
+    //            GregoryQuadPointIndices.append(MAX_IND++);
+    //            vertexGregoryCoords.append(e[6]);                                               //coord add e3+
+    //            GregoryQuadPointIndices.append(MAX_IND++);
+    //            vertexGregoryCoords.append(e[7]);                                               //coord add e3-
+    //            GregoryQuadPointIndices.append(MAX_IND++);
 
-        //calculate Face points
-        currentEdge = leftEdge;
-        float d = n==4 ? 3.0 : 4.0; // depends on the shape of the patch
-        int arr_size = n * 2;
-
-        for(int f_ind = 0 ; f_ind < n ; f_ind++){
-            //currentVertex_ind change
-            currentVertex_ind = currentEdge->target->index;
-            //calculate c0, c1
-            float c_sp_0 = float(currentEdge->target->val);
-            float c_sp_1 = float(currentEdge->next->target->val);
-            float c_scaler_0 = cos(2*M_PI/c_sp_0);
-            float c_scaler_1 = cos(2*M_PI/c_sp_1);
-
-            //get face points
-            int first_index = (2*f_ind+3)% arr_size;
-            int secont_index = (2*f_ind+6)% arr_size;
-            f.append((1.0/ d) * ((c_scaler_1 * vertexLimitCoords[currentVertex_ind]) + ((d - (2.0 * c_scaler_0) - c_scaler_1) * e[2*f_ind]) + ((2.0 * c_scaler_0) * e[first_index]) + r[2*f_ind]));
-            f.append((1.0/ d) * ((c_scaler_0 * vertexLimitCoords[currentVertex_ind]) + ((d - (2.0 * c_scaler_1) - c_scaler_0) * e[2*f_ind+1]) + ((2.0 * c_scaler_1) * e[secont_index]) + r[2*f_ind+1]));
-
-//            f.append((1.0/ d) * ((c_scaler_1 * vertexCoords[currentVertex_ind]) + ((d - (2.0 * c_scaler_0) - c_scaler_1) * e[2*f_ind]) + ((2.0 * c_scaler_0) * e[first_index]) + r[2*f_ind]));//test
-//            f.append((1.0/ d) * ((c_scaler_0 * vertexCoords[currentVertex_ind]) + ((d - (2.0 * c_scaler_1) - c_scaler_0) * e[2*f_ind+1]) + ((2.0 * c_scaler_1) * e[secont_index]) + r[2*f_ind+1]));//test
-            currentEdge = currentEdge->next; //move to next vertex point
-        }
-
-        MAX_IND = vertexGregoryCoords.size();
-        //Add coordinates with Indexing (Edge and Face points)
-        if(n == 4){     // quad
-            currentEdge = leftEdge;
-//            GregoryQuadPointIndices.append(currentEdge->target->index);                     //p0
-//            GregoryQuadPointIndices.append(currentEdge->next->target->index);               //p1
-//            GregoryQuadPointIndices.append(currentEdge->next->next->target->index);         //p2
-//            GregoryQuadPointIndices.append(currentEdge->next->next->next->target->index);   //p3
-
-//            vertexGregoryCoords.append(e[0]);                                               //coord add e0+
-//            GregoryQuadPointIndices.append(MAX_IND++);
-//            vertexGregoryCoords.append(e[1]);                                               //coord add e0-
-//            GregoryQuadPointIndices.append(MAX_IND++);
-//            vertexGregoryCoords.append(e[2]);                                               //coord add e1+
-//            GregoryQuadPointIndices.append(MAX_IND++);
-//            vertexGregoryCoords.append(e[3]);                                               //coord add e1-
-//            GregoryQuadPointIndices.append(MAX_IND++);
-//            vertexGregoryCoords.append(e[4]);                                               //coord add e2+
-//            GregoryQuadPointIndices.append(MAX_IND++);
-//            vertexGregoryCoords.append(e[5]);                                               //coord add e2-
-//            GregoryQuadPointIndices.append(MAX_IND++);
-//            vertexGregoryCoords.append(e[6]);                                               //coord add e3+
-//            GregoryQuadPointIndices.append(MAX_IND++);
-//            vertexGregoryCoords.append(e[7]);                                               //coord add e3-
-//            GregoryQuadPointIndices.append(MAX_IND++);
-
-//            vertexGregoryCoords.append(f[0]);                                               //coord add f0+
-//            GregoryQuadPointIndices.append(MAX_IND++);
-//            vertexGregoryCoords.append(f[1]);                                               //coord add f0-
-//            GregoryQuadPointIndices.append(MAX_IND++);
-//            vertexGregoryCoords.append(f[2]);                                               //coord add f1+
-//            GregoryQuadPointIndices.append(MAX_IND++);
-//            vertexGregoryCoords.append(f[3]);                                               //coord add f1-
-//            GregoryQuadPointIndices.append(MAX_IND++);
-//            vertexGregoryCoords.append(f[4]);                                               //coord add f2+
-//            GregoryQuadPointIndices.append(MAX_IND++);
-//            vertexGregoryCoords.append(f[5]);                                               //coord add f2-
-//            GregoryQuadPointIndices.append(MAX_IND++);
-//            vertexGregoryCoords.append(f[6]);                                               //coord add f3+
-//            GregoryQuadPointIndices.append(MAX_IND++);
-//            vertexGregoryCoords.append(f[7]);                                               //coord add f3-
-//            GregoryQuadPointIndices.append(MAX_IND++);
-//            GregoryQuadPointIndices.append(MAX_INT);
+    //            vertexGregoryCoords.append(f[0]);                                               //coord add f0+
+    //            GregoryQuadPointIndices.append(MAX_IND++);
+    //            vertexGregoryCoords.append(f[1]);                                               //coord add f0-
+    //            GregoryQuadPointIndices.append(MAX_IND++);
+    //            vertexGregoryCoords.append(f[2]);                                               //coord add f1+
+    //            GregoryQuadPointIndices.append(MAX_IND++);
+    //            vertexGregoryCoords.append(f[3]);                                               //coord add f1-
+    //            GregoryQuadPointIndices.append(MAX_IND++);
+    //            vertexGregoryCoords.append(f[4]);                                               //coord add f2+
+    //            GregoryQuadPointIndices.append(MAX_IND++);
+    //            vertexGregoryCoords.append(f[5]);                                               //coord add f2-
+    //            GregoryQuadPointIndices.append(MAX_IND++);
+    //            vertexGregoryCoords.append(f[6]);                                               //coord add f3+
+    //            GregoryQuadPointIndices.append(MAX_IND++);
+    //            vertexGregoryCoords.append(f[7]);                                               //coord add f3-
+    //            GregoryQuadPointIndices.append(MAX_IND++);
+    //            GregoryQuadPointIndices.append(MAX_INT);
 
 
-            vertexGregoryQuadCoords.append(vertexLimitCoords[currentEdge->target->index]);                      //p0
-            vertexGregoryQuadCoords.append(vertexLimitCoords[currentEdge->next->target->index]);               //p1
-            vertexGregoryQuadCoords.append(vertexLimitCoords[currentEdge->next->next->target->index]);         //p2
-            vertexGregoryQuadCoords.append(vertexLimitCoords[currentEdge->next->next->next->target->index]);   //p3
+                vertexGregoryQuadCoords.append(vertexLimitCoords[currentEdge->target->index]);                      //p0
+                vertexGregoryQuadCoords.append(vertexLimitCoords[currentEdge->next->target->index]);               //p1
+                vertexGregoryQuadCoords.append(vertexLimitCoords[currentEdge->next->next->target->index]);         //p2
+                vertexGregoryQuadCoords.append(vertexLimitCoords[currentEdge->next->next->next->target->index]);   //p3
 
-            vertexGregoryQuadCoords.append(e[0]);                                               //coord add e0+
-            vertexGregoryQuadCoords.append(e[1]);                                               //coord add e0-
-            vertexGregoryQuadCoords.append(e[2]);                                               //coord add e1+
-            vertexGregoryQuadCoords.append(e[3]);                                               //coord add e1-
-            vertexGregoryQuadCoords.append(e[4]);                                               //coord add e2+
-            vertexGregoryQuadCoords.append(e[5]);                                               //coord add e2-
-            vertexGregoryQuadCoords.append(e[6]);                                               //coord add e3+
-            vertexGregoryQuadCoords.append(e[7]);                                               //coord add e3-
+                vertexGregoryQuadCoords.append(e[0]);                                               //coord add e0+
+                vertexGregoryQuadCoords.append(e[1]);                                               //coord add e0-
+                vertexGregoryQuadCoords.append(e[2]);                                               //coord add e1+
+                vertexGregoryQuadCoords.append(e[3]);                                               //coord add e1-
+                vertexGregoryQuadCoords.append(e[4]);                                               //coord add e2+
+                vertexGregoryQuadCoords.append(e[5]);                                               //coord add e2-
+                vertexGregoryQuadCoords.append(e[6]);                                               //coord add e3+
+                vertexGregoryQuadCoords.append(e[7]);                                               //coord add e3-
 
-            vertexGregoryQuadCoords.append(f[0]);                                               //coord add f0+
-            vertexGregoryQuadCoords.append(f[1]);                                               //coord add f0-
-            vertexGregoryQuadCoords.append(f[2]);                                               //coord add f1+
-            vertexGregoryQuadCoords.append(f[3]);                                               //coord add f1-
-            vertexGregoryQuadCoords.append(f[4]);                                               //coord add f2+
-            vertexGregoryQuadCoords.append(f[5]);                                               //coord add f2-
-            vertexGregoryQuadCoords.append(f[6]);                                               //coord add f3+
-            vertexGregoryQuadCoords.append(f[7]);                                               //coord add f3-
+                vertexGregoryQuadCoords.append(f[0]);                                               //coord add f0+
+                vertexGregoryQuadCoords.append(f[1]);                                               //coord add f0-
+                vertexGregoryQuadCoords.append(f[2]);                                               //coord add f1+
+                vertexGregoryQuadCoords.append(f[3]);                                               //coord add f1-
+                vertexGregoryQuadCoords.append(f[4]);                                               //coord add f2+
+                vertexGregoryQuadCoords.append(f[5]);                                               //coord add f2-
+                vertexGregoryQuadCoords.append(f[6]);                                               //coord add f3+
+                vertexGregoryQuadCoords.append(f[7]);                                               //coord add f3-
 
-        }
+            }
 
-        else        //triangle
-        {
-            currentEdge = leftEdge;
-//            GregoryTriPointIndices.append(currentEdge->target->index);                     //p0
-//            GregoryTriPointIndices.append(currentEdge->next->target->index);               //p1
-//            GregoryTriPointIndices.append(currentEdge->next->next->target->index);         //p2
+            else        //triangle
+            {
+                currentEdge = inEdge;
+    //            GregoryTriPointIndices.append(currentEdge->target->index);                     //p0
+    //            GregoryTriPointIndices.append(currentEdge->next->target->index);               //p1
+    //            GregoryTriPointIndices.append(currentEdge->next->next->target->index);         //p2
 
-//            int MAX_IND = vertexGregoryCoords.size();
-//            vertexGregoryCoords.append(e[0]);                                               //coord add e0+
-//            GregoryTriPointIndices.append(MAX_IND++);
-//            vertexGregoryCoords.append(e[1]);                                               //coord add e0-
-//            GregoryTriPointIndices.append(MAX_IND++);
-//            vertexGregoryCoords.append(e[2]);                                               //coord add e1+
-//            GregoryTriPointIndices.append(MAX_IND++);
-//            vertexGregoryCoords.append(e[3]);                                               //coord add e1-
-//            GregoryTriPointIndices.append(MAX_IND++);
-//            vertexGregoryCoords.append(e[4]);                                               //coord add e2+
-//            GregoryTriPointIndices.append(MAX_IND++);
-//            vertexGregoryCoords.append(e[5]);                                               //coord add e2-
-//            GregoryTriPointIndices.append(MAX_IND++);
+    //            int MAX_IND = vertexGregoryCoords.size();
+    //            vertexGregoryCoords.append(e[0]);                                               //coord add e0+
+    //            GregoryTriPointIndices.append(MAX_IND++);
+    //            vertexGregoryCoords.append(e[1]);                                               //coord add e0-
+    //            GregoryTriPointIndices.append(MAX_IND++);
+    //            vertexGregoryCoords.append(e[2]);                                               //coord add e1+
+    //            GregoryTriPointIndices.append(MAX_IND++);
+    //            vertexGregoryCoords.append(e[3]);                                               //coord add e1-
+    //            GregoryTriPointIndices.append(MAX_IND++);
+    //            vertexGregoryCoords.append(e[4]);                                               //coord add e2+
+    //            GregoryTriPointIndices.append(MAX_IND++);
+    //            vertexGregoryCoords.append(e[5]);                                               //coord add e2-
+    //            GregoryTriPointIndices.append(MAX_IND++);
 
-//            vertexGregoryCoords.append(f[0]);                                               //coord add f0+
-//            GregoryTriPointIndices.append(MAX_IND++);
-//            vertexGregoryCoords.append(f[1]);                                               //coord add f0-
-//            GregoryTriPointIndices.append(MAX_IND++);
-//            vertexGregoryCoords.append(f[2]);                                               //coord add f1+
-//            GregoryTriPointIndices.append(MAX_IND++);
-//            vertexGregoryCoords.append(f[3]);                                               //coord add f1-
-//            GregoryTriPointIndices.append(MAX_IND++);
-//            vertexGregoryCoords.append(f[4]);                                               //coord add f2+
-//            GregoryTriPointIndices.append(MAX_IND++);
-//            vertexGregoryCoords.append(f[5]);                                               //coord add f2-
-//            GregoryTriPointIndices.append(MAX_IND++);
-//            GregoryTriPointIndices.append(MAX_INT);
+    //            vertexGregoryCoords.append(f[0]);                                               //coord add f0+
+    //            GregoryTriPointIndices.append(MAX_IND++);
+    //            vertexGregoryCoords.append(f[1]);                                               //coord add f0-
+    //            GregoryTriPointIndices.append(MAX_IND++);
+    //            vertexGregoryCoords.append(f[2]);                                               //coord add f1+
+    //            GregoryTriPointIndices.append(MAX_IND++);
+    //            vertexGregoryCoords.append(f[3]);                                               //coord add f1-
+    //            GregoryTriPointIndices.append(MAX_IND++);
+    //            vertexGregoryCoords.append(f[4]);                                               //coord add f2+
+    //            GregoryTriPointIndices.append(MAX_IND++);
+    //            vertexGregoryCoords.append(f[5]);                                               //coord add f2-
+    //            GregoryTriPointIndices.append(MAX_IND++);
+    //            GregoryTriPointIndices.append(MAX_INT);
 
-            vertexGregoryTriCoords.append(vertexLimitCoords[currentEdge->target->index]);                     //p0
-            vertexGregoryTriCoords.append(vertexLimitCoords[currentEdge->next->target->index]);               //p1
-            vertexGregoryTriCoords.append(vertexLimitCoords[currentEdge->next->next->target->index]);         //p2
+                vertexGregoryTriCoords.append(vertexLimitCoords[currentEdge->target->index]);                     //p0
+                vertexGregoryTriCoords.append(vertexLimitCoords[currentEdge->next->target->index]);               //p1
+                vertexGregoryTriCoords.append(vertexLimitCoords[currentEdge->next->next->target->index]);         //p2
 
-            vertexGregoryTriCoords.append(e[0]);                                               //coord add e0+
-            vertexGregoryTriCoords.append(e[1]);                                               //coord add e0-
-            vertexGregoryTriCoords.append(e[2]);                                               //coord add e1+
-            vertexGregoryTriCoords.append(e[3]);                                               //coord add e1-
-            vertexGregoryTriCoords.append(e[4]);                                               //coord add e2+
-            vertexGregoryTriCoords.append(e[5]);                                               //coord add e2-
+                vertexGregoryTriCoords.append(e[0]);                                               //coord add e0+
+                vertexGregoryTriCoords.append(e[1]);                                               //coord add e0-
+                vertexGregoryTriCoords.append(e[2]);                                               //coord add e1+
+                vertexGregoryTriCoords.append(e[3]);                                               //coord add e1-
+                vertexGregoryTriCoords.append(e[4]);                                               //coord add e2+
+                vertexGregoryTriCoords.append(e[5]);                                               //coord add e2-
 
-            vertexGregoryTriCoords.append(f[0]);                                               //coord add f0+
-            vertexGregoryTriCoords.append(f[1]);                                               //coord add f0-
-            vertexGregoryTriCoords.append(f[2]);                                               //coord add f1+
-            vertexGregoryTriCoords.append(f[3]);                                               //coord add f1-
-            vertexGregoryTriCoords.append(f[4]);                                               //coord add f2+
-            vertexGregoryTriCoords.append(f[5]);                                               //coord add f2-
-        }
+                vertexGregoryTriCoords.append(f[0]);                                               //coord add f0+
+                vertexGregoryTriCoords.append(f[1]);                                               //coord add f0-
+                vertexGregoryTriCoords.append(f[2]);                                               //coord add f1+
+                vertexGregoryTriCoords.append(f[3]);                                               //coord add f1-
+                vertexGregoryTriCoords.append(f[4]);                                               //coord add f2+
+                vertexGregoryTriCoords.append(f[5]);                                               //coord add f2-
+            }
     } // Looping on all Faces
 
     qDebug() << "Finished calculating Gregory patches";
@@ -407,8 +411,8 @@ void Mesh::computeSurfacePatches_v2() { // triangle, quad, but without boundarie
 
 float Mesh:: cal_lambda(int val) // calculate rambda for Edge point
 {
-    float rambda = 0.0;
-     rambda = (1.0/16.0) * (5.0 + cos(2.0*M_PI/float(val)) + cos(M_PI/float(val)) * sqrt(18.0 + (2.0 * cos(2.0*M_PI/float(val)))));
+    float rambda = 0.0f;
+     rambda = (1.0f/16.0f) * (5.0f + cos(2.0f*M_PI/float(val)) + cos(M_PI/float(val)) * sqrt(18.0f + (2.0f * cos(2.0f*M_PI/float(val)))));
     return rambda;
 }
 
@@ -420,19 +424,18 @@ QVector<QVector3D> Mesh:: cal_q(int val, QVector<QVector3D> m, QVector<QVector3D
     q.append(QVector3D());
     q.append(QVector3D());
     //qDebug() << "q values" << q;
-    float theta = pow(4 + pow(cos(M_PI/float(val)),2),-0.5);
+    float theta = pow(4.0f + pow(cos(M_PI/float(val)),2),-0.5);
     //qDebug() << "theta" <<theta;
     //qDebug() << "M_PI" << M_PI;
     for(int i = 0 ; i<val ; i++)
     {
-        q[0] = q[0] + (((1.0- theta * cos(M_PI/float(val)))*cos(2.0*float(i)*M_PI/float(val))* m[i])        // q +
-              + (2.0 * theta * cos(2.0*float(i)*M_PI/float(val)) * c[i]));
+        q[0] = q[0] + (((1.0f- theta * cos(M_PI/float(val)))*cos(2.0f*float(i)*M_PI/float(val))* m[i])        // q +
+              + (2.0f * theta * cos(2.0f*float(i)*M_PI/float(val)) * c[i]));
         int q_mod = (i+1) % val; // next neighbor edge (e-)
-        //qDebug() << "q_mod" <<q_mod;
+        qDebug() << "q_mod" <<q_mod;
 
-        // TODO: this part goes wrong for q_mod = 0
-        q[1] = q[1] + (((1.0- theta * cos(M_PI/float(val)))*cos(2.0*float(q_mod)*M_PI/float(val))* m[i])    // q -
-              + (2.0 * theta * cos(2.0*float(q_mod)*M_PI/float(val)) * c[i]));
+        q[1] = q[1] + (((1.0f- theta * cos(M_PI/float(val)))*cos(2.0f*float(i)*M_PI/float(val))* m[q_mod])    // q -
+              + (2.0f * theta * cos(2.0f*float(i)*M_PI/float(val)) * c[q_mod]));
     }
     q[0] = 2/float(val) * q[0];
     q[1] = 2/float(val) * q[1];
@@ -445,8 +448,8 @@ QVector<QVector3D> Mesh:: cal_r(QVector<QVector3D> m, QVector<QVector3D> c) // c
     //qDebug() << "call cal_r";
     QVector<QVector3D> r;
     r.reserve(2);
-    r.append ((1.0/3.0 * (m[1] - m.last())) + (2.0/3.0 * (c[0] - c.last())));    // r +
-    r.append ((1.0/3.0 * (m[2] - m[0])) + (2.0/3.0 * (c[1] - c[0])));               // r -
+    r.append ((1.0f/3.0f * (m[1] - m.last())) + (2.0f/3.0f * (c[0] - c.last())));    // r +
+    r.append ((1.0f/3.0f * (m[2] - m[0])) + (2.0f/3.0f * (c[1] - c[0])));               // r -
     return r;
 }
 
@@ -464,10 +467,10 @@ QVector3D Mesh::computeLimitPosition(Vertex* currentVertex) { // corner
         Vertex* p1 = currentVertex;
         Vertex* p2 = boundaryEdge->next->target;
 
-        newPosition  = 1.0 * p0->coords;
-        newPosition += 4.0 * p1->coords;
-        newPosition += 1.0 * p2->coords;
-        newPosition /= 6.0;
+        newPosition  = 1.0f * p0->coords;
+        newPosition += 4.0f * p1->coords;
+        newPosition += 1.0f * p2->coords;
+        newPosition /= 6.0f;
 
     }
     // calculate newPosition for non-boundary vertex
@@ -500,8 +503,8 @@ QVector3D Mesh::computeLimitPosition(Vertex* currentVertex) { // corner
         }
 
 
-        float firsTerm = (n - 3.0) / (n + 5.0);
-        float secondTerm = 4.0 / (n * (n + 5.0));
+        float firsTerm = (n - 3.0f) / (n + 5.0f);
+        float secondTerm = 4.0f / (n * (n + 5.0f));
 
         newPosition = firsTerm * currentVertex->coords + secondTerm * sum_m_c;
 
@@ -696,10 +699,10 @@ QVector3D Mesh::vertexPoint(HalfEdge* firstEdge, QVector<Vertex>& newVertices) {
             vertexPt = boundaryEdge->twin->target->coords;
         }
         else {
-            vertexPt  = 1.0 * boundaryEdge->target->coords;
-            vertexPt += 6.0 * boundaryEdge->twin->target->coords;
-            vertexPt += 1.0 * boundaryEdge->prev->twin->target->coords;
-            vertexPt /= 8.0;
+            vertexPt  = 1.0f * boundaryEdge->target->coords;
+            vertexPt += 6.0f * boundaryEdge->twin->target->coords;
+            vertexPt += 1.0f * boundaryEdge->prev->twin->target->coords;
+            vertexPt /= 8.0f;
         }
     }
     else {
@@ -722,16 +725,16 @@ QVector3D Mesh::edgePoint(HalfEdge* firstEdge, QVector<Vertex>& newVertices) {
 
     // Catmull-Clark (also supporting initial meshes containing n-gons)
     if (!currentEdge->polygon || !currentEdge->twin->polygon) {
-        EdgePt  = 4.0 * currentEdge->target->coords;
-        EdgePt += 4.0 * currentEdge->twin->target->coords;
-        EdgePt /= 8.0;
+        EdgePt  = 4.0f * currentEdge->target->coords;
+        EdgePt += 4.0f * currentEdge->twin->target->coords;
+        EdgePt /= 8.0f;
     }
     else {
         EdgePt  = currentEdge->target->coords;
         EdgePt += currentEdge->twin->target->coords;
         EdgePt += newVertices[currentEdge->polygon->index].coords;
         EdgePt += newVertices[currentEdge->twin->polygon->index].coords;
-        EdgePt /= 4.0;
+        EdgePt /= 4.0f;
     }
 
     return EdgePt;
