@@ -30,7 +30,8 @@ private:
     QOpenGLShaderProgram shaderProg;
 
     // Uniforms
-    GLint uniModelViewMatrix, uniProjectionMatrix, uniNormalMatrix, uniInnerLevel, uniOuterLevel;
+    GLint uniModelViewMatrix, uniProjectionMatrix, uniNormalMatrix,
+    uniColorMatrix, uniInnerLevel, uniOuterLevel;
 
 };
 

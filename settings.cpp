@@ -8,6 +8,7 @@ Settings::Settings()
     uniformLimitUpdateRequired = true;
     uniformTesUpdateRequired = true;
     uniformGregUpdateRequired = true;
+    uniformGreg_tri_UpdateRequired = true;
     limitPosition = false;
     showSurfacePatch = false;
     showControlMesh = false;

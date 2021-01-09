@@ -26,6 +26,7 @@ public:
     bool uniformLimitUpdateRequired;
     bool uniformTesUpdateRequired;
     bool uniformGregUpdateRequired;
+    bool uniformGreg_tri_UpdateRequired;
 
     QMatrix4x4 modelViewMatrix, projectionMatrix;
     QMatrix3x3 normalMatrix;

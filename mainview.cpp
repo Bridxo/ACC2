@@ -81,6 +81,7 @@ void MainView::updateMatrices() {
     settings.uniformLimitUpdateRequired = true;
     settings.uniformTesUpdateRequired = true;
     settings.uniformGregUpdateRequired = true;
+    settings.uniformGreg_tri_UpdateRequired = true;
 
     update();
 }
@@ -147,7 +148,7 @@ void MainView::paintGL() {
 
     if (settings.showGregoryPatch) {
         gregQuadr.draw();
-        //gregTrir.draw();
+        gregTrir.draw();
     }
 
 }

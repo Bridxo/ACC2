@@ -12,6 +12,7 @@ layout (location = 0) out vec3 vertlimitcoords_camera_fs;
 layout (location = 1) out vec3 vertlimitnormal_camera_fs;
 
 void main() {
+  gl_PointSize = 10.0;
   gl_Position = projectionmatrix * modelviewmatrix * vec4(vertlimitcoords_world_vs, 1.0);
 
   vertlimitcoords_camera_fs = vec3(modelviewmatrix * vec4(vertlimitcoords_world_vs, 1.0));

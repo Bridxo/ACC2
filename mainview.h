@@ -58,7 +58,7 @@ private:
   LimitRenderer limr;
   TessellationRenderer tesr;
   GregoryRendererQuad gregQuadr;
-  GregoryRendererQuad gregTrir;
+  GregoryRendererTriangle gregTrir;
 
   //we make mainwindow a friend so it can access settings and the currentMesh
   friend class MainWindow;
