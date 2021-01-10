@@ -34,9 +34,9 @@ float B3(float u) {
 
 vec3 calcPos(float u, float v) {
     vec3 F0 = (u * vertcoords_es[12] + v * vertcoords_es[13]) / (u + v);
-    vec3 F1 = ((1.0 - u) * vertcoords_es[14] + v * vertcoords_es[15]) / (1.0 - u + v);
+    vec3 F1 = ((1.0 - u) * vertcoords_es[15] + v * vertcoords_es[14]) / (1.0 - u + v);
     vec3 F2 = ((1.0 - u) * vertcoords_es[16] + (1.0 - v) * vertcoords_es[17]) / (2.0 - u - v);
-    vec3 F3 = (u * vertcoords_es[18] + (1.0 - v) * vertcoords_es[19]) / (1.0 + u - v);;
+    vec3 F3 = (u * vertcoords_es[19] + (1.0 - v) * vertcoords_es[18]) / (1.0 + u - v);
 
     return B0(u) * B0(v) * vertcoords_es[0] +
            B1(u) * B0(v) * vertcoords_es[4] +
