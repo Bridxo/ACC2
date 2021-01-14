@@ -66,7 +66,7 @@ QGroupBox::title {
        <property name="geometry">
         <rect>
          <x>20</x>
-         <y>300</y>
+         <y>360</y>
          <width>181</width>
          <height>29</height>
         </rect>
@@ -89,7 +89,7 @@ QGroupBox::title {
        <property name="geometry">
         <rect>
          <x>20</x>
-         <y>270</y>
+         <y>330</y>
          <width>181</width>
          <height>20</height>
         </rect>
@@ -122,12 +122,12 @@ QGroupBox::title {
         <rect>
          <x>30</x>
          <y>140</y>
-         <width>161</width>
+         <width>171</width>
          <height>20</height>
         </rect>
        </property>
        <property name="text">
-        <string>Surface Patches</string>
+        <string>Regular Surface Patches</string>
        </property>
       </widget>
       <widget class="QCheckBox" name="LimitPos">
@@ -166,7 +166,7 @@ QGroupBox::title {
        <property name="geometry">
         <rect>
          <x>20</x>
-         <y>370</y>
+         <y>430</y>
          <width>181</width>
          <height>29</height>
         </rect>
@@ -197,7 +197,7 @@ QGroupBox::title {
        <property name="geometry">
         <rect>
          <x>20</x>
-         <y>350</y>
+         <y>410</y>
          <width>131</width>
          <height>16</height>
         </rect>

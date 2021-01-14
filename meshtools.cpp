@@ -1,3 +1,4 @@
+#define _USE_MATH_DEFINES
 #include "mesh.h"
 #include<cmath>
 
@@ -42,19 +43,19 @@ void Mesh::computeSurfacePatches() {
         // determine patch for regular quads (all vertices have valency 4)
         if (n == 4) {
             //qDebug() << "found a quad, checking vertices valencies...";
-             HalfEdge* outEdge = currentFace->side;
+             HalfEdge* bottomEdge = currentFace->side;
              HalfEdge* rightEdge = currentFace->side->next;
              HalfEdge* topEdge = currentFace->side->next->next;
-             HalfEdge* inEdge = currentFace->side->next->next->next;
-            if ( outEdge->target->val == 4 &&
+             HalfEdge* leftEdge = currentFace->side->next->next->next;
+            if ( bottomEdge->target->val == 4 &&
                  rightEdge->target->val == 4 &&
                  topEdge->target->val == 4 &&
-                 inEdge->target->val == 4
+                 leftEdge->target->val == 4
                  ) {
 
                 count_quads+=1;
 
-                HalfEdge* currentEdge = inEdge;
+                HalfEdge* currentEdge = leftEdge;
 
                 // find vertices in top-left corner
                 currentEdge = currentEdge->twin->next;
@@ -80,7 +81,7 @@ void Mesh::computeSurfacePatches() {
                     }
 
                     //find vertices in bottom-left corner
-                    currentEdge = inEdge;
+                    currentEdge = leftEdge;
                     currentEdge = currentEdge->twin->next->next->next->twin;
                     controlPointIndices.append(currentEdge->target->index);
                     vertexSurfaceCoords.append(currentEdge->target->coords);
@@ -109,61 +110,39 @@ void Mesh::computeSurfacePatches() {
 
     }
 
-//    qDebug() << "total number of regular quads is" << count_quads;
+    qDebug() << "total number of regular quads is" << count_quads;
 
-//    qDebug() << "controlPointIndices size" << controlPointIndices.size();
+    qDebug() << "controlPointIndices size" << controlPointIndices.size();
 
-//    qDebug() << "vertexSurfaceCoords size" << vertexSurfaceCoords.size();
+    qDebug() << "vertexSurfaceCoords size" << vertexSurfaceCoords.size();
 
 }
 void Mesh::computeSurfacePatches_v2() { // triangle, quad, but without boundaries
-//    qDebug() << "compute gregory patches";
+    qDebug() << "compute gregory patches";
 
     unsigned int numFaces = faces.size();
-    unsigned int k, n, i;
-    vertexGregoryCoords.clear();
-    vertexGregoryQuadCoords.clear();
-    vertexGregoryTriCoords.clear();
-    vertexGregoryCoords = vertexLimitCoords;
+    unsigned int k, currentFaceVal;
 
     //QUAD Case 20 control points indices 0 - 19
     // 0  1  2  3  4   5   6   7   8   9   10  11  12  13  14  15  16  17  18  19
-    // p0 p1 p2 p3 e0+ e0- e1+ e1- e2+ e2- e3+ e3- f0+ f0- f1+ f1- f2+ f2- f3+ f3- INT_MAX
+    // p0 p1 p2 p3 e0+ e0- e1+ e1- e2+ e2- e3+ e3- f0+ f0- f1+ f1- f2+ f2- f3+ f3-
     //Patch Structure
     // p0  e0- e3+  p3
     // e0+ F0  F3   e3-
     // e1- F1  F2   e2+
     // p1  e1+ e2-  p2
 
+    vertexGregoryQuadCoords.clear();
+    vertexGregoryQuadCoords.reserve(numFaces*20);
 
-    GregoryQuadPointIndices.clear();
-    GregoryQuadPointIndices.reserve(numFaces*20);
-
-//    vertexGregoryQuadCoords.clear();
-//    vertexGregoryQuadCoords.reserve(numFaces*20);
-
-    //Triangle Case 15 control points indices 0 - 14
-    // p0 p1 p2 e0+ e0- e1+ e1- e2+ e2- f0+ f0- f1+ f1- f2+ f2- INT_MAX
+    vertexGregoryTriCoords.clear();
+    vertexGregoryTriCoords.reserve(numFaces*15);
 
 
-    GregoryTriPointIndices.clear();
-    GregoryTriPointIndices.reserve(numFaces*15);
-
-//    vertexGregoryTriCoords.clear();
-//    vertexGregoryTriCoords.reserve(numFaces*15);
-
-//    int MAX_IND = vertexGregoryCoords.size();
-
-    for (k=0; k<numFaces; k++) {
-//        qDebug()<<faces[k].side->target->index << faces[k].side->next->target->index << faces[k].side->next->next->target->index << faces[k].side->next->next->next->target->index;
-    }
     for (k=0; k<numFaces; k++) { // along with all faces
 
         //EDGE Points
-        //ver1
         QVector<QVector3D> e;
-        //ver2
-//        QVector<QVector3D> e(currentFace->val);
         e.clear(); //reset for next patch
 
         //r Points (To calculate face points)
@@ -176,157 +155,183 @@ void Mesh::computeSurfacePatches_v2() { // triangle, quad, but without boundarie
 
         //Basic variables initialization
         Face* currentFace = &faces[k];
-        n = currentFace->val;
+        currentFaceVal = currentFace->val;
+        HalfEdge* startEdge = currentFace->side; //indicates edge of face
 
-        HalfEdge* outEdge = currentFace->side;      //not to change
-        HalfEdge* inEdge = currentFace->side->prev; //not to change
-
-        HalfEdge* currentEdge = outEdge;
-        Vertex* currentVertex = inEdge->target;
-        int currentVertex_ind = currentVertex->index;
-
-
-        //qDebug()<< "valency is" <<n;
+        //qDebug()<< "face index" << k << "valency is" << currentFaceVal;
 
         //abnormal case
-        if(n != 4 && n != 3) {
-            //qDebug()<<"The face is not a quad or triangle";
+        if(currentFaceVal != 4 && currentFaceVal != 3) {
+            qDebug()<<"The face at index " << k << "is not a quad nor triangle";
         }
-//        qDebug()<<currentEdge->target->index<<currentEdge->next->target->index<<currentEdge->next->next->target->index;
-        //normal case (irregular)
-        if( (n == 4 && !(
-                    currentEdge->target->val == 4 &&
-                    currentEdge->next->target->val == 4 &&
-                    currentEdge->next->next->target->val == 4 &&
-                    currentEdge->next->next->next->target->val == 4)
-                     ) || n == 3 ){
-            for (unsigned int v_ind=0;v_ind< n ;v_ind++){
-                // find Vertex related mid edge points and face center points
-                // this can be optimized with --> set m, c into the vertex class (once per vertex to calculate) but need to know which edge is connected m and c
-                QVector<QVector3D> m(currentVertex->val), c(currentVertex->val);
-                HalfEdge* tempEdge = currentEdge;
-                for(i=0;i < currentVertex->val;i++) // looping val times on vertex (one ring neighbor) GET M and C
-                {
-                    //calculate Centroid point C (Shape dependancy tri, quad)
 
-                    HalfEdge* find_centroid = tempEdge;
-                    int shape = tempEdge->polygon->val;
+        if( (currentFaceVal == 4 && !(
+            startEdge->target->val == 4 &&
+            startEdge->next->target->val == 4 &&
+            startEdge->next->next->target->val == 4 &&
+            startEdge->next->next->next->target->val == 4)
+             ) || currentFaceVal == 3 ){
+             //qDebug() << "found an irregular quad or triangle";
 
-                    QVector3D centroid = currentVertex->coords;
-//                    qDebug()<<"FACE coords - "<< currentVertex->index;
-                    for(int idx = 0;idx<shape-1;idx++)
-                    {
-//                        qDebug()<<"FACE coords - "<< find_centroid->target->index;
-                        centroid = centroid + find_centroid->target->coords;
-                        find_centroid=find_centroid->next;
-                    }
-    //                qDebug()<<"Connected vertex - "<< currentEdge->target->coords;
-                    //calculate Edge mid point M -- need i indexing for right ordering first ->0 next-> n ...(CCW)
-                    m[i] = (0.5 * currentVertex->coords + 0.5 * tempEdge->target->coords);
-                    c[i] = (centroid/float(shape));
+             //if (currentFace->index == 1) {
+                 //quad or triangle case
+                 for (int v_ind=0; v_ind< currentFaceVal; v_ind++){
+                     // find Vertex related mid edge points and face center points
+                     // this can be optimized with --> set m, c into the vertex class (once per vertex to calculate) but need to know which edge is connected m and c
 
-                    tempEdge = tempEdge->twin->next; // move to next neighbor edge
-                }
-                //calculate Edge points
-                //qDebug()<<"calculate Edge points";
-                float lambda = cal_lambda(currentVertex->val);
-                QVector<QVector3D> q = cal_q(currentVertex->val,m,c);
-//                qDebug()<<vertexLimitCoords[currentVertex_ind];
-                //ver1
-                e.append((vertexLimitCoords[currentVertex_ind]) + ((2.0f / 3.0f) * lambda * q[0])); //e+
-                e.append((vertexLimitCoords[currentVertex_ind]) - ((2.0f / 3.0f) * lambda * q[1])); //e-
+                     //values needed to determine the limit position of non-boundary vertices
+                     Vertex* currentVertex = startEdge->target;
 
-                //ver2
-//                e.append((vertexLimitCoords[currentVertex_ind]) + ((2.0f / 3.0f) * lambda * q[0])); //e+
-//                e.append((vertexLimitCoords[currentVertex_ind]) + ((2.0f / 3.0f) * lambda * q[0])); //e-
-
-                //calculate r values
-                QVector<QVector3D> temp_r = cal_r(m,c);
-                r.append(temp_r[0]);
-                r.append(temp_r[1]);
-
-                //move to next vertex point
-                currentVertex = currentEdge->target; // move to next vertex on quad/tri
-                currentEdge = currentEdge->next;
-                currentVertex_ind = currentVertex->index;
-            } // looping over patches (one ring neighbor)
+                     //FIXME: this turned out to be the primary fix!
+//                      taking the out of the vertex is not necesarilly going to be the halfedge that is part of this face!
+//                     HalfEdge* currentEdge = currentVertex->out;
+                     HalfEdge* currentEdge = startEdge->next;
 
 
+                     int currentVertex_ind = currentVertex->index;
+                     QVector<QVector3D> m, c;
+                     m.reserve(currentVertex->val);
+                     c.reserve(currentVertex->val);
+                     unsigned int n = currentVertex->val;
 
+                     //qDebug() << "***currentVertex index" << currentVertex->index << "valency" << n;
+
+                     for (unsigned int k = 0; k < n; k++) {
+                         QVector3D m_coords = QVector3D(); // mid-point
+                         QVector3D c_coords = QVector3D(); // center-point
+                         HalfEdge* edgeInFace = currentEdge; // edge in face to determine c
+
+                         //qDebug() << "connected edge target index" << currentEdge->target->index;
+
+                         m_coords = (currentVertex->coords + currentEdge->target->coords) / 2;
+
+                         unsigned int faceValency = currentEdge->polygon->val;
+
+                         //qDebug() << "face index to determine c" <<  currentEdge->polygon->index;
+
+                         for (unsigned int j = 0; j < faceValency; j++){
+                             c_coords += edgeInFace->target->coords;
+
+                             edgeInFace = edgeInFace->next;
+                         }
+
+                         c_coords /= faceValency; //center-point
+
+                         m.append(m_coords);
+                         c.append(c_coords);
+
+                         //currentEdge = currentEdge->twin->next;
+                         currentEdge = currentEdge->prev->twin;
+                     }
+
+                     //qDebug() << "m" << m;
+                     //qDebug() << "c" << c;
+
+
+                     //calculate Edge points
+                     //qDebug()<<"calculate Edge points";
+
+                     float lambda = cal_lambda(n);
+                     QVector<QVector3D> q = cal_q(n,m,c);
+                     e.append((vertexLimitCoords[currentVertex_ind]) + ((2.0 / 3.0) * lambda * q[0])); //e+
+                     e.append((vertexLimitCoords[currentVertex_ind]) + ((2.0 / 3.0) * lambda * q[1])); //e-
+
+                     /*qDebug() << "lambda" << lambda;
+                     qDebug() << "q[0]" << q[0];
+                     qDebug() << "e+" << e[2*v_ind];
+                     qDebug() << "e-" << e[2*v_ind+1];
+                     */
+
+                     //calculate r values
+                     QVector<QVector3D> temp_r = cal_r(m,c);
+                     r.append(temp_r[0]);
+                     r.append(temp_r[1]);
+
+                     //qDebug() << "r+" << r[2*v_ind];
+                     //qDebug() << "r-" << r[2*v_ind+1];
+
+                     //move to next vertex point
+                     currentEdge = currentEdge->next;
+                     currentVertex = currentEdge->target; // move to next vertex on quad
+                     currentVertex_ind = currentVertex->index;
+
+                     startEdge = startEdge->next;
+
+
+                 } // looping over vertices of the current face
+
+                 //qDebug() << "e" << e;
+                 //qDebug() << "r" << r;
 
 
             //calculate Face points
-            currentEdge = inEdge; // reset the currentEdge
-            float d = n==4 ? 3.0f : 4.0f; // depends on the shape of the patch
-            int arr_size = n * 2;
+            //qDebug() << "####calculate Face points###";
+            HalfEdge* currentEdge = currentFace->side; //indicates edge of face
 
-            for(unsigned int f_ind = 0 ; f_ind < n ; f_ind++){
+            float d = currentFaceVal==4 ? 3.0 : 4.0; // depends on the shape of the patch
+            //int arr_size = currentFaceVal * 2;
+
+            for(int f_ind = 0 ; f_ind < currentFaceVal ; f_ind++){
                 //currentVertex_ind change
-                currentVertex_ind = currentEdge->target->index;
+                //Vertex* currentVertex = currentEdge->target;
+                int currentVertex_ind = currentEdge->target->index;
+                //qDebug() << "currentVertex at index" << currentVertex_ind;
                 //calculate c0, c1
-                float c_sp_0 = float(currentEdge->target->val);
-                float c_sp_1 = float(currentEdge->next->target->val);
-                float c_scaler_0 = cos(2*M_PI/c_sp_0);
-                float c_scaler_1 = cos(2*M_PI/c_sp_1);
+                float n_0 = float(currentEdge->target->val);
+                float n_1 = float(currentEdge->next->target->val);
+                float c_scaler_0 = cos(2*M_PI/n_0);
+                float c_scaler_1 = cos(2*M_PI/n_1);
+                //qDebug() << "c0 at for vertex at index" << currentVertex_ind << "with valency" << currentEdge->target->val << "is" << c_scaler_0;
+                //qDebug() << "c1 at for vertex at index" << currentEdge->next->target->index << "with valency" << currentEdge->next->target->val << "is" << c_scaler_1;
 
                 //get face points
-                int first_index = (2*f_ind+3)% arr_size;
-                int secont_index = (2*f_ind+6)% arr_size;
-                f.append((1.0f/ d) * ((c_scaler_1 * vertexLimitCoords[currentVertex_ind]) + ((d - (2.0f * c_scaler_0) - c_scaler_1) * e[2*f_ind]) + ((2.0f * c_scaler_0) * e[first_index]) + r[2*f_ind]));
-                f.append((1.0f/ d) * ((c_scaler_0 * vertexLimitCoords[currentVertex_ind]) + ((d - (2.0f * c_scaler_1) - c_scaler_0) * e[2*f_ind+1]) + ((2.0f * c_scaler_1) * e[secont_index]) + r[2*f_ind+1]));
+                //int first_index = (2*f_ind+3)% arr_size;
+                //int secont_index = (2*f_ind+6)% arr_size;
+                int e0_plus_ind = 2*f_ind;
+                int e0_minus_ind = 2*f_ind+1;
+                int e1_minus_ind = 2*( (f_ind+1) % currentFaceVal) + 1;
+                //FIXME: this turned out to be +3!
+//                int e3_plus_ind  = 2*( (f_ind+2) % currentFaceVal);
+                int e3_plus_ind  = 2*( (f_ind+3) % currentFaceVal);
+
+                /*qDebug() << "e0_plus at index" << e0_plus_ind << "is" << e[e0_plus_ind];
+                qDebug() << "e1_minus at index" << e1_minus_ind << "is" << e[e1_minus_ind];
+                qDebug() << "r0" << r[e0_plus_ind];
+                qDebug() << "limit position" << vertexLimitCoords[currentVertex_ind];
+                qDebug() << "d" << d;
+
+                qDebug() << "f+ intermediate result" << (c_scaler_1 * vertexLimitCoords[currentVertex_ind]) + ((d - (2.0 * c_scaler_0) - c_scaler_1) * e[e0_plus_ind]) + ((2.0 * c_scaler_0) * e[e1_minus_ind]) + r[e0_plus_ind];
+                */
+
+                f.append( (1.0/ d) * ( c_scaler_1 * vertexLimitCoords[currentVertex_ind] +
+                                       (d - 2.0 * c_scaler_0 - c_scaler_1) * e[e0_plus_ind] +
+                                       2.0 * c_scaler_0 * e[e1_minus_ind] +
+                                       r[e0_plus_ind]) //f+
+                          );
+                f.append( (1.0/ d) * ( c_scaler_0 * vertexLimitCoords[currentVertex_ind] +
+                                       (d - 2.0 * c_scaler_1 - c_scaler_0) * e[e0_minus_ind] +
+                                       2.0 * c_scaler_1 * e[e3_plus_ind] +
+                                       r[e0_minus_ind]) //f-
+                          );
+
+                qDebug() << "f values" << f;
+
                 currentEdge = currentEdge->next; //move to next vertex point
             }
 
-//            MAX_IND = vertexGregoryCoords.size();
-            //Add coordinates with Indexing (Edge and Face points)
-            if(n == 4){     // quad
-                currentEdge = inEdge; //current edge reset
-    //            GregoryQuadPointIndices.append(currentEdge->target->index);                     //p0
-    //            GregoryQuadPointIndices.append(currentEdge->next->target->index);               //p1
-    //            GregoryQuadPointIndices.append(currentEdge->next->next->target->index);         //p2
-    //            GregoryQuadPointIndices.append(currentEdge->next->next->next->target->index);   //p3
 
-    //            vertexGregoryCoords.append(e[0]);                                               //coord add e0+
-    //            GregoryQuadPointIndices.append(MAX_IND++);
-    //            vertexGregoryCoords.append(e[1]);                                               //coord add e0-
-    //            GregoryQuadPointIndices.append(MAX_IND++);
-    //            vertexGregoryCoords.append(e[2]);                                               //coord add e1+
-    //            GregoryQuadPointIndices.append(MAX_IND++);
-    //            vertexGregoryCoords.append(e[3]);                                               //coord add e1-
-    //            GregoryQuadPointIndices.append(MAX_IND++);
-    //            vertexGregoryCoords.append(e[4]);                                               //coord add e2+
-    //            GregoryQuadPointIndices.append(MAX_IND++);
-    //            vertexGregoryCoords.append(e[5]);                                               //coord add e2-
-    //            GregoryQuadPointIndices.append(MAX_IND++);
-    //            vertexGregoryCoords.append(e[6]);                                               //coord add e3+
-    //            GregoryQuadPointIndices.append(MAX_IND++);
-    //            vertexGregoryCoords.append(e[7]);                                               //coord add e3-
-    //            GregoryQuadPointIndices.append(MAX_IND++);
+            qDebug() << "####Add coordinates to vertexGregoryQuadCoords";
+            //Add coordinates (Corner, Edge and Face points)
+            if(currentFaceVal == 4){     // quad
 
-    //            vertexGregoryCoords.append(f[0]);                                               //coord add f0+
-    //            GregoryQuadPointIndices.append(MAX_IND++);
-    //            vertexGregoryCoords.append(f[1]);                                               //coord add f0-
-    //            GregoryQuadPointIndices.append(MAX_IND++);
-    //            vertexGregoryCoords.append(f[2]);                                               //coord add f1+
-    //            GregoryQuadPointIndices.append(MAX_IND++);
-    //            vertexGregoryCoords.append(f[3]);                                               //coord add f1-
-    //            GregoryQuadPointIndices.append(MAX_IND++);
-    //            vertexGregoryCoords.append(f[4]);                                               //coord add f2+
-    //            GregoryQuadPointIndices.append(MAX_IND++);
-    //            vertexGregoryCoords.append(f[5]);                                               //coord add f2-
-    //            GregoryQuadPointIndices.append(MAX_IND++);
-    //            vertexGregoryCoords.append(f[6]);                                               //coord add f3+
-    //            GregoryQuadPointIndices.append(MAX_IND++);
-    //            vertexGregoryCoords.append(f[7]);                                               //coord add f3-
-    //            GregoryQuadPointIndices.append(MAX_IND++);
-    //            GregoryQuadPointIndices.append(MAX_INT);
+                qDebug() << "append corner points";
+                vertexGregoryQuadCoords.append(vertexLimitCoords[startEdge->target->index]);                     //p0
+                vertexGregoryQuadCoords.append(vertexLimitCoords[startEdge->next->target->index]);               //p1
+                vertexGregoryQuadCoords.append(vertexLimitCoords[startEdge->next->next->target->index]);         //p2
+                vertexGregoryQuadCoords.append(vertexLimitCoords[startEdge->next->next->next->target->index]);   //p3
 
-
-                vertexGregoryQuadCoords.append(vertexLimitCoords[currentEdge->target->index]);                      //p0
-                vertexGregoryQuadCoords.append(vertexLimitCoords[currentEdge->next->target->index]);               //p1
-                vertexGregoryQuadCoords.append(vertexLimitCoords[currentEdge->next->next->target->index]);         //p2
-                vertexGregoryQuadCoords.append(vertexLimitCoords[currentEdge->next->next->next->target->index]);   //p3
-
+                qDebug() << "append edge points";
+                qDebug() << "e" << e;
                 vertexGregoryQuadCoords.append(e[0]);                                               //coord add e0+
                 vertexGregoryQuadCoords.append(e[1]);                                               //coord add e0-
                 vertexGregoryQuadCoords.append(e[2]);                                               //coord add e1+
@@ -335,6 +340,7 @@ void Mesh::computeSurfacePatches_v2() { // triangle, quad, but without boundarie
                 vertexGregoryQuadCoords.append(e[5]);                                               //coord add e2-
                 vertexGregoryQuadCoords.append(e[6]);                                               //coord add e3+
                 vertexGregoryQuadCoords.append(e[7]);                                               //coord add e3-
+
 
                 vertexGregoryQuadCoords.append(f[0]);                                               //coord add f0+
                 vertexGregoryQuadCoords.append(f[1]);                                               //coord add f0-
@@ -349,42 +355,11 @@ void Mesh::computeSurfacePatches_v2() { // triangle, quad, but without boundarie
 
             else        //triangle
             {
-                currentEdge = inEdge;
-    //            GregoryTriPointIndices.append(currentEdge->target->index);                     //p0
-    //            GregoryTriPointIndices.append(currentEdge->next->target->index);               //p1
-    //            GregoryTriPointIndices.append(currentEdge->next->next->target->index);         //p2
 
-    //            int MAX_IND = vertexGregoryCoords.size();
-    //            vertexGregoryCoords.append(e[0]);                                               //coord add e0+
-    //            GregoryTriPointIndices.append(MAX_IND++);
-    //            vertexGregoryCoords.append(e[1]);                                               //coord add e0-
-    //            GregoryTriPointIndices.append(MAX_IND++);
-    //            vertexGregoryCoords.append(e[2]);                                               //coord add e1+
-    //            GregoryTriPointIndices.append(MAX_IND++);
-    //            vertexGregoryCoords.append(e[3]);                                               //coord add e1-
-    //            GregoryTriPointIndices.append(MAX_IND++);
-    //            vertexGregoryCoords.append(e[4]);                                               //coord add e2+
-    //            GregoryTriPointIndices.append(MAX_IND++);
-    //            vertexGregoryCoords.append(e[5]);                                               //coord add e2-
-    //            GregoryTriPointIndices.append(MAX_IND++);
 
-    //            vertexGregoryCoords.append(f[0]);                                               //coord add f0+
-    //            GregoryTriPointIndices.append(MAX_IND++);
-    //            vertexGregoryCoords.append(f[1]);                                               //coord add f0-
-    //            GregoryTriPointIndices.append(MAX_IND++);
-    //            vertexGregoryCoords.append(f[2]);                                               //coord add f1+
-    //            GregoryTriPointIndices.append(MAX_IND++);
-    //            vertexGregoryCoords.append(f[3]);                                               //coord add f1-
-    //            GregoryTriPointIndices.append(MAX_IND++);
-    //            vertexGregoryCoords.append(f[4]);                                               //coord add f2+
-    //            GregoryTriPointIndices.append(MAX_IND++);
-    //            vertexGregoryCoords.append(f[5]);                                               //coord add f2-
-    //            GregoryTriPointIndices.append(MAX_IND++);
-    //            GregoryTriPointIndices.append(MAX_INT);
-
-                vertexGregoryTriCoords.append(vertexLimitCoords[currentEdge->target->index]);                     //p0
-                vertexGregoryTriCoords.append(vertexLimitCoords[currentEdge->next->target->index]);               //p1
-                vertexGregoryTriCoords.append(vertexLimitCoords[currentEdge->next->next->target->index]);         //p2
+                vertexGregoryTriCoords.append(startEdge->target->coords);                     //p0
+                vertexGregoryTriCoords.append(startEdge->next->target->coords);               //p1
+                vertexGregoryTriCoords.append(startEdge->next->next->target->coords);         //p2
 
                 vertexGregoryTriCoords.append(e[0]);                                               //coord add e0+
                 vertexGregoryTriCoords.append(e[1]);                                               //coord add e0-
@@ -393,25 +368,32 @@ void Mesh::computeSurfacePatches_v2() { // triangle, quad, but without boundarie
                 vertexGregoryTriCoords.append(e[4]);                                               //coord add e2+
                 vertexGregoryTriCoords.append(e[5]);                                               //coord add e2-
 
-                vertexGregoryTriCoords.append(f[0]);                                                //coord add f0+
+                vertexGregoryTriCoords.append(f[0]);                                               //coord add f0+
                 vertexGregoryTriCoords.append(f[1]);                                               //coord add f0-
                 vertexGregoryTriCoords.append(f[2]);                                               //coord add f1+
                 vertexGregoryTriCoords.append(f[3]);                                               //coord add f1-
                 vertexGregoryTriCoords.append(f[4]);                                               //coord add f2+
                 vertexGregoryTriCoords.append(f[5]);                                               //coord add f2-
+
             }
+
+          //} //test for face 1
+
+        } else {
+            //qDebug() << "the current face is part of a regular patch";
+        }
+
     } // Looping on all Faces
 
-//    qDebug() << "Finished calculating Gregory patches";
-    }
+    qDebug() << "Finished calculating Gregory patches";
 }
 
 
 float Mesh:: cal_lambda(int val) // calculate rambda for Edge point
 {
-    float lambda = 0.0f;
-     lambda = (1.0f/16.0f) * (5.0f + cos(2.0f*M_PI/float(val)) + cos(M_PI/float(val)) * sqrt(18.0f + (2.0f * cos(2.0f*M_PI/float(val)))));
-    return lambda;
+    float rambda = 0.0;
+     rambda = (1.0/16.0) * (5.0 + cos(2.0*M_PI/float(val)) + cos(M_PI/float(val)) * sqrt(18.0 + (2.0 * cos(2.0*M_PI/float(val)))));
+    return rambda;
 }
 
 QVector<QVector3D> Mesh:: cal_q(int val, QVector<QVector3D> m, QVector<QVector3D> c) // calculate Q tffor Edge point [0] == + [1] == -
@@ -421,22 +403,38 @@ QVector<QVector3D> Mesh:: cal_q(int val, QVector<QVector3D> m, QVector<QVector3D
     q.reserve(2);
     q.append(QVector3D());
     q.append(QVector3D());
-    //qDebug() << "q values" << q;
-    float sigma = pow((4.0f + pow(cos(M_PI/float(val)),2)),-0.5);
-    //qDebug() << "sigma" <<sigma;
+
+    float theta = pow(4 + pow(cos(M_PI/val),2),-0.5);
+    //qDebug() << "theta" <<theta;
     //qDebug() << "M_PI" << M_PI;
+
+    //qDebug() << "starting index for e+" << 0;
+    //qDebug() << "starting index for e-" << val-1;
+
     for(int i = 0 ; i<val ; i++)
     {
-        q[0] = q[0] + (((1.0f - sigma * cos(M_PI/float(val))) * cos(2.0f*float(i)*M_PI/float(val))* m[i])        // q +
-              + (2.0f * sigma * cos((2.0f*float(i)*M_PI)/float(val)) * c[i]));
-        int q_mod = (i+1) % val; // next neighbor edge (e-)
-//        qDebug() << "q_mod" <<q_mod;
+        //qDebug() << "m[i]" << m[i];
+        //qDebug() << "c[i]" << c[i];
+        //qDebug() << "q" << q;
+        q[0] = q[0] + ((( 1.0- theta * cos(M_PI / float(val))) * cos(2.0*float(i)*M_PI / float(val))* m[i])
+              + (2.0 * theta * cos( (2.0*float(i)*M_PI + M_PI)/float(val)) * c[i]));
 
-        q[1] = q[1] + (((1.0f - sigma * cos(M_PI/float(val))) * cos(2.0f*float(i)*M_PI/float(val))* m[q_mod])    // q -
-              + (2.0f * sigma * cos((2.0f*float(i)*M_PI)/float(val)) * c[q_mod]));
+        //int q_mod = (i+1) % val; // next neighbor edge (e-)
+
+        //FIXME: I fixed this to point to the next edge and not to the previous edge!
+//        int q_mod = (i + val - 1) % val; // next neighbor edge (e-)
+        int q_mod = (i + val + 1) % val; // next neighbor edge (e-)
+
+        //qDebug() << "q_mod" <<q_mod;
+
+        //q[1] = q[1] + (((1.0- theta * cos(M_PI/float(val)))*cos(2.0*float(q_mod)*M_PI/float(val))* m[i])    // q -
+        //              + (2.0 * theta * cos( (2.0*float(q_mod)*M_PI + M_PI)/float(val)) * c[i]));
+
+        q[1] = q[1] + (((1.0- theta * cos(M_PI/float(val)))*cos(2.0*float(i)*M_PI/float(val))* m[q_mod])    // q -
+                      + (2.0 * theta * cos( (2.0*float(i)*M_PI + M_PI)/float(val)) * c[q_mod]));
     }
-    q[0] = 2/float(val) * q[0];
-    q[1] = 2/float(val) * q[1];
+    q[0] = 2.0/float(val) * q[0];
+    q[1] = 2.0/float(val) * q[1];
 
     //qDebug() << "q values" << q;
     return q;
@@ -446,8 +444,9 @@ QVector<QVector3D> Mesh:: cal_r(QVector<QVector3D> m, QVector<QVector3D> c) // c
     //qDebug() << "call cal_r";
     QVector<QVector3D> r;
     r.reserve(2);
-    r.append ((1.0f/3.0f * (m[1] - m.last())) + (2.0f/3.0f * (c[0] - c.last())));    // r +
-    r.append ((1.0f/3.0f * (m[2] - m[0])) + (2.0f/3.0f * (c[1] - c[0])));               // r -
+    r.append ( (1.0/3.0 * (m[1] - m.last())) + (2.0/3.0 * (c[0] - c.last())));    // r +
+    r.append ( (1.0/3.0 * (m[0] - m[2])) + (2.0/3.0 * (c[0] - c[1])));            // r - into patch
+    //r.append ( (1.0/3.0 * (m[2] - m[0])) + (2.0/3.0 * (c[1] - c[0])));
     return r;
 }
 
@@ -465,10 +464,10 @@ QVector3D Mesh::computeLimitPosition(Vertex* currentVertex) { // corner
         Vertex* p1 = currentVertex;
         Vertex* p2 = boundaryEdge->next->target;
 
-        newPosition  = 1.0f * p0->coords;
-        newPosition += 4.0f * p1->coords;
-        newPosition += 1.0f * p2->coords;
-        newPosition /= 6.0f;
+        newPosition  = 1.0 * p0->coords;
+        newPosition += 4.0 * p1->coords;
+        newPosition += 1.0 * p2->coords;
+        newPosition /= 6.0;
 
     }
     // calculate newPosition for non-boundary vertex
@@ -497,12 +496,13 @@ QVector3D Mesh::computeLimitPosition(Vertex* currentVertex) { // corner
 
             sum_m_c = sum_m_c + m + c;
 
-            currentEdge = currentEdge->twin->next;
+            //currentEdge = currentEdge->twin->next;
+            currentEdge = currentEdge->prev->twin;
         }
 
 
-        float firsTerm = (n - 3.0f) / (n + 5.0f);
-        float secondTerm = 4.0f / (n * (n + 5.0f));
+        float firsTerm = (n - 3.0) / (n + 5.0);
+        float secondTerm = 4.0 / (n * (n + 5.0));
 
         newPosition = firsTerm * currentVertex->coords + secondTerm * sum_m_c;
 
@@ -525,7 +525,7 @@ void Mesh::subdivideCatmullClark(Mesh& mesh) {
     unsigned short n;
     HalfEdge* currentEdge;
 
-//    qDebug() << ":: Creating new Catmull-Clark mesh";
+    qDebug() << ":: Creating new Catmull-Clark mesh";
 
     numVerts = vertices.size();
     numHalfEdges = halfEdges.size();
@@ -552,7 +552,7 @@ void Mesh::subdivideCatmullClark(Mesh& mesh) {
                                    k) );
     }
 
-//    qDebug() << " * Created face points";
+    qDebug() << " * Created face points";
 
     vIndex = numFaces;
 
@@ -567,7 +567,7 @@ void Mesh::subdivideCatmullClark(Mesh& mesh) {
         vIndex++;
     }
 
-//    qDebug() << " * Created vertex points";
+    qDebug() << " * Created vertex points";
 
     // Create edge points
     for (k=0; k<numHalfEdges; k++) {
@@ -584,13 +584,13 @@ void Mesh::subdivideCatmullClark(Mesh& mesh) {
         }
     }
 
-//    qDebug() << " * Created edge points";
+    qDebug() << " * Created edge points";
 
 
     // Split halfedges
     splitHalfEdges(newVertices, newHalfEdges);
 
-//    qDebug() << " * Split halfedges";
+    qDebug() << " * Split halfedges";
 
     hIndex = 2*numHalfEdges;
     fIndex = 0;
@@ -697,10 +697,10 @@ QVector3D Mesh::vertexPoint(HalfEdge* firstEdge, QVector<Vertex>& newVertices) {
             vertexPt = boundaryEdge->twin->target->coords;
         }
         else {
-            vertexPt  = 1.0f * boundaryEdge->target->coords;
-            vertexPt += 6.0f * boundaryEdge->twin->target->coords;
-            vertexPt += 1.0f * boundaryEdge->prev->twin->target->coords;
-            vertexPt /= 8.0f;
+            vertexPt  = 1.0 * boundaryEdge->target->coords;
+            vertexPt += 6.0 * boundaryEdge->twin->target->coords;
+            vertexPt += 1.0 * boundaryEdge->prev->twin->target->coords;
+            vertexPt /= 8.0;
         }
     }
     else {
@@ -723,16 +723,16 @@ QVector3D Mesh::edgePoint(HalfEdge* firstEdge, QVector<Vertex>& newVertices) {
 
     // Catmull-Clark (also supporting initial meshes containing n-gons)
     if (!currentEdge->polygon || !currentEdge->twin->polygon) {
-        EdgePt  = 4.0f * currentEdge->target->coords;
-        EdgePt += 4.0f * currentEdge->twin->target->coords;
-        EdgePt /= 8.0f;
+        EdgePt  = 4.0 * currentEdge->target->coords;
+        EdgePt += 4.0 * currentEdge->twin->target->coords;
+        EdgePt /= 8.0;
     }
     else {
         EdgePt  = currentEdge->target->coords;
         EdgePt += currentEdge->twin->target->coords;
         EdgePt += newVertices[currentEdge->polygon->index].coords;
         EdgePt += newVertices[currentEdge->twin->polygon->index].coords;
-        EdgePt /= 4.0f;
+        EdgePt /= 4.0;
     }
 
     return EdgePt;
@@ -762,7 +762,7 @@ void Mesh::splitHalfEdges(QVector<Vertex>& newVertices, QVector<HalfEdge>& newHa
 
     vIndex = vertices.size() + faces.size();
 
-    for (k = 0; k < uint(halfEdges.size()); k++) {
+    for (k = 0; k < halfEdges.size(); k++) {
         currentEdge = &halfEdges[k];
         m = currentEdge->twin->index;
 

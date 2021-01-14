@@ -1,16 +1,16 @@
-#ifndef GREGORYRENDERER_QUAD_H
-#define GREGORYRENDERER_QUAD_H
+#ifndef GREGORYRENDERER_QUAD_POINTS_H
+#define GREGORYRENDERER_QUAD_POINTS_H
 
 #include <QOpenGLShaderProgram>
 
 #include "renderer.h"
 #include "mesh.h"
 
-class GregoryRendererQuad: public Renderer
+class GregoryRendererQuadPoints: public Renderer
 {
 public:
-    GregoryRendererQuad();
-    ~GregoryRendererQuad();
+    GregoryRendererQuadPoints();
+    ~GregoryRendererQuadPoints();
 
     void init(QOpenGLFunctions_4_1_Core* f, Settings* s);
 
@@ -34,4 +34,4 @@ private:
 
 };
 
-#endif // GREGORYRENDERER_QUAD_H
+#endif // GREGORYRENDERER_QUAD_POINTS_H

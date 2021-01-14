@@ -1,3 +1,4 @@
+#define _USE_MATH_DEFINES
 #include "mainview.h"
 #include "math.h"
 #include <QLoggingCategory>
@@ -81,7 +82,6 @@ void MainView::updateMatrices() {
     settings.uniformLimitUpdateRequired = true;
     settings.uniformTesUpdateRequired = true;
     settings.uniformGregUpdateRequired = true;
-    settings.uniformGreg_tri_UpdateRequired = true;
 
     update();
 }

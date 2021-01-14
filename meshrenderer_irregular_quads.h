@@ -1,16 +1,16 @@
-#ifndef GREGORYRENDERER_QUAD_H
-#define GREGORYRENDERER_QUAD_H
+#ifndef MESHRENDERER_IRREGULAR_QUADS_H
+#define MESHRENDERER_IRREGULAR_QUADS_H
 
 #include <QOpenGLShaderProgram>
 
 #include "renderer.h"
 #include "mesh.h"
 
-class GregoryRendererQuad: public Renderer
+class MeshRendererIrregularQuads : public Renderer
 {
 public:
-    GregoryRendererQuad();
-    ~GregoryRendererQuad();
+    MeshRendererIrregularQuads();
+    ~MeshRendererIrregularQuads();
 
     void init(QOpenGLFunctions_4_1_Core* f, Settings* s);
 
@@ -30,8 +30,7 @@ private:
     QOpenGLShaderProgram shaderProg;
 
     // Uniforms
-    GLint uniModelViewMatrix, uniProjectionMatrix, uniNormalMatrix, uniInnerLevel, uniOuterLevel;
-
+    GLint uniModelViewMatrix, uniProjectionMatrix, uniNormalMatrix;
 };
 
-#endif // GREGORYRENDERER_QUAD_H
+#endif // MESHRENDERER_IRREGULAR_QUADS_H

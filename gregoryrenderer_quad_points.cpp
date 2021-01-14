@@ -1,16 +1,16 @@
-#include "gregoryrenderer_quad.h"
+#include "gregoryrenderer_quad_points.h"
 
-GregoryRendererQuad::GregoryRendererQuad()
+GregoryRendererQuadPoints::GregoryRendererQuadPoints()
 {
     meshIBOSize = 0;
 }
 
-GregoryRendererQuad::~GregoryRendererQuad() {
+GregoryRendererQuadPoints::~GregoryRendererQuadPoints() {
     gl->glDeleteVertexArrays(1, &vao);
     gl->glDeleteBuffers(1, &meshCoordsBO);
 }
 
-void GregoryRendererQuad::init(QOpenGLFunctions_4_1_Core* f, Settings* s) {
+void GregoryRendererQuadPoints::init(QOpenGLFunctions_4_1_Core* f, Settings* s) {
     gl = f;
     settings = s;
 
@@ -18,10 +18,10 @@ void GregoryRendererQuad::init(QOpenGLFunctions_4_1_Core* f, Settings* s) {
     initBuffers();
 }
 
-void GregoryRendererQuad::initShaders() {
+void GregoryRendererQuadPoints::initShaders() {
     shaderProg.create();
 
-//    shaderProg.addShaderFromSourceFile(QOpenGLShader::Vertex, ":/shaders/vertshader.glsl");
+    //shaderProg.addShaderFromSourceFile(QOpenGLShader::Vertex, ":/shaders/vertshader.glsl");
     shaderProg.addShaderFromSourceFile(QOpenGLShader::Vertex, ":/shaders/vertshader_surface.glsl");
     shaderProg.addShaderFromSourceFile(QOpenGLShader::TessellationControl, ":/shaders/tcs_quad.glsl");
     shaderProg.addShaderFromSourceFile(QOpenGLShader::TessellationEvaluation, ":/shaders/tes_quad.glsl");
@@ -38,7 +38,7 @@ void GregoryRendererQuad::initShaders() {
 
 }
 
-void GregoryRendererQuad::initBuffers() {
+void GregoryRendererQuadPoints::initBuffers() {
 
     //create vao
     gl->glGenVertexArrays(1, &vao);
@@ -59,7 +59,7 @@ void GregoryRendererQuad::initBuffers() {
 
 }
 
-void GregoryRendererQuad::updateBuffers(Mesh& currentMesh) {
+void GregoryRendererQuadPoints::updateBuffers(Mesh& currentMesh) {
 
     qDebug() << ".. updateBuffers";
 
@@ -72,15 +72,15 @@ void GregoryRendererQuad::updateBuffers(Mesh& currentMesh) {
     QVector<QVector3D> vertexGregoryQuadCoords_test;
 
 
-    //for (int i=0;i<meshIBOSize/20;i++){
-    for (int i=0;i<1;i++){ //only first irregular quad
+    for (int i=0;i<meshIBOSize/20;i++){
+    //for (int i=0;i<1;i++){ //only first irregular quad
 
         qDebug() << "i" <<i;
-        for (int j=12;j<20;j++){
+        for (int j=0;j<20;j++){
         //for (int j=0;j<13;j++){//corner and edge points
-//        for (int j=0;j<13;j++){//corner and edge points
-//            vertexGregoryQuadCoords_test.append(vertexGregoryQuadCoords[20*i+j]);
-//            qDebug() << "j" <<j;
+        //for (int j=0;j<6;j++){//corner and edge points
+            vertexGregoryQuadCoords_test.append(vertexGregoryQuadCoords[20*i+j]);
+            qDebug() << "j" <<j;
             //qDebug() << "quad coords" << vertexGregoryQuadCoords[20*i+j];
             //qDebug() << "test coords" << vertexGregoryQuadCoords_test[20*i+j];
         }
@@ -90,8 +90,8 @@ void GregoryRendererQuad::updateBuffers(Mesh& currentMesh) {
     qDebug() << "added test coords to vertexGregoryQuadCoords_test";
 
     gl->glBindBuffer(GL_ARRAY_BUFFER, meshCoordsBO);
-    gl->glBufferData(GL_ARRAY_BUFFER, sizeof(QVector3D)*vertexGregoryQuadCoords.size(), vertexGregoryQuadCoords.data(), GL_DYNAMIC_DRAW);
-//    gl->glBufferData(GL_ARRAY_BUFFER, sizeof(QVector3D)*vertexGregoryQuadCoords_test.size(), vertexGregoryQuadCoords_test.data(), GL_DYNAMIC_DRAW);
+    //gl->glBufferData(GL_ARRAY_BUFFER, sizeof(QVector3D)*vertexGregoryQuadCoords.size(), vertexGregoryQuadCoords.data(), GL_DYNAMIC_DRAW);
+    gl->glBufferData(GL_ARRAY_BUFFER, sizeof(QVector3D)*vertexGregoryQuadCoords_test.size(), vertexGregoryQuadCoords_test.data(), GL_DYNAMIC_DRAW);
 
     qDebug() << " → Updated meshCoordsBO for Gregory quad tessellation";
 
@@ -100,7 +100,7 @@ void GregoryRendererQuad::updateBuffers(Mesh& currentMesh) {
 
 }
 
-void GregoryRendererQuad::updateUniforms() {
+void GregoryRendererQuadPoints::updateUniforms() {
     gl->glUniformMatrix4fv(uniModelViewMatrix, 1, false, settings->modelViewMatrix.data());
     gl->glUniformMatrix4fv(uniProjectionMatrix, 1, false, settings->projectionMatrix.data());
     gl->glUniformMatrix3fv(uniNormalMatrix, 1, false, settings->normalMatrix.data());
@@ -109,7 +109,7 @@ void GregoryRendererQuad::updateUniforms() {
     gl->glUniform1f(uniOuterLevel, float(settings->tess_level)); // for the outer tessellation
 }
 
-void GregoryRendererQuad::draw() {
+void GregoryRendererQuadPoints::draw() {
 
     shaderProg.bind();
 
@@ -120,13 +120,13 @@ void GregoryRendererQuad::draw() {
 
     gl->glBindVertexArray(vao);
 
-//     set number of input vertices to 20
+    // set number of input vertices to 20
     gl->glPatchParameteri(GL_PATCH_VERTICES, 20);
     gl->glDrawArrays(GL_PATCHES, 0, meshIBOSize);
 
-//    gl->glPointSize(4);
-//    gl->glDrawArrays(GL_POINTS, 0, meshIBOSize);
-
+    /*gl->glPointSize(4);
+    gl->glDrawArrays(GL_POINTS, 0, meshIBOSize);
+    */
     gl->glBindVertexArray(0);
 
     shaderProg.release();

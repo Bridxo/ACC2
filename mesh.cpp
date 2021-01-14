@@ -143,6 +143,25 @@ void Mesh::extractAttributes() {
 
     for (int k = 0; k < faces.size(); k++) {
         setFaceNormal(&faces[k]);
+
+        /*Face* curFace = &faces[k];
+        qDebug() << "face index" << k << "valency" << curFace->val << "vertices:";
+
+        HalfEdge* curEdge = curFace->side;
+
+        for (int l = 0; l < curFace->val; l++){
+            Vertex* curVertex = curEdge->target;
+            qDebug() << "index" << curVertex->index << "coords" << curVertex->coords << "valency" << curVertex->val;
+            HalfEdge* curIncidentEdge = curEdge;
+            qDebug() << "incident vertices:";
+            for (int m = 0; m < curVertex->val; m++){
+                qDebug() << "incident vertex index" << curIncidentEdge->target->index << "coords" << curIncidentEdge->target->coords << "valency" << curVertex->val;
+                curIncidentEdge = curIncidentEdge->twin->next;
+            }
+
+            curEdge = curEdge->next;
+        }*/
+
     }
 
     for (int k = 0; k < vertices.size(); k++) {
@@ -152,14 +171,14 @@ void Mesh::extractAttributes() {
      // extract and assign limit position coordinates for all vertices
     for (int k = 0; k < vertices.size(); k++) {
         vertexLimitCoords.append( computeLimitPosition(&vertices[k]) );
-        vertexGregoryCoords.append( computeLimitPosition(&vertices[k]) );
+        //vertexGregoryCoords.append( computeLimitPosition(&vertices[k]) );
         //qDebug() << "append limit coords" << computeLimitPosition(&vertices[k]);
     }
 
     // extract normals for vertex limit positions
     for (int k = 0; k < vertices.size(); k++) {
         vertexLimitNormals.append( computeVertexLimitNormal(&vertices[k]) );
-        vertexGregoryNormals.append( computeVertexLimitNormal(&vertices[k]) );
+        //vertexGregoryNormals.append( computeVertexLimitNormal(&vertices[k]) );
     }
 
     polyIndices.clear();

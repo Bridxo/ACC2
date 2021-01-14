@@ -9,7 +9,7 @@
 
 #include "objfile.h"
 
-#define MAX_INT ((unsigned int) -1)
+//#define MAX_INT ((unsigned int) -1)
 
 class Mesh {
 
@@ -29,14 +29,11 @@ public:
     inline QVector<QVector3D>& getVertexLimitNorms() { return vertexLimitNormals; } //array of normals of vertex limit positions
     inline QVector<QVector3D>& getVertexGregoryQuadCoords() { return vertexGregoryQuadCoords; }
     inline QVector<QVector3D>& getVertexGregoryTriCoords() { return vertexGregoryTriCoords; }
-    inline QVector<QVector3D>& getVertexGregoryCoords() { return vertexGregoryCoords; }
     inline QVector<unsigned int>& getRegularQuadIndices() { return regularQuadIndices; } //array of indices for regular quads
     inline QVector<unsigned int>& getIrregularQuadIndices() { return irregularQuadIndices; } //array of indices for non-regular quads
     inline QVector<unsigned int>& getTriangleIndices() { return triangleIndices; } //array of indices for triangles
     inline QVector<unsigned int>& getPolyIndices() { return polyIndices; }
-    inline QVector<unsigned int>& getControlPointIndices() { return controlPointIndices; }
-    inline QVector<unsigned int>& getGregoryQuadPointIndices() { return GregoryQuadPointIndices; }
-    inline QVector<unsigned int>& getGregoryTriPointIndices() { return GregoryTriPointIndices; }
+    inline QVector<unsigned int>& getControlPointIndices() { return controlPointIndices; };
     void setTwins(unsigned int numHalfEdges, unsigned int indexH, QVector<QVector<unsigned int>>& potentialTwins);
 
     QVector3D facePoint(Face* firstEdge);
