@@ -20,7 +20,8 @@ void MainWindow::importOBJ() {
   ui->MainDisplay->settings.modelLoaded = true;
   ui->MainDisplay->settings.showControlMesh = true;
   ui->MainDisplay->settings.showSurfacePatch = false;
-  ui->MainDisplay->settings.showGregoryPatch = false;
+  ui->MainDisplay->settings.showGregoryQuadPatch = false;
+  ui->MainDisplay->settings.showGregoryTriPatch = false;
   ui->MainDisplay->settings.limitPosition = false;
   ui->MainDisplay->settings.useDifferentColors = false;
   ui->MainDisplay->settings.showEdges= false;
@@ -39,8 +40,11 @@ void MainWindow::on_ImportOBJ_clicked() {
   ui->SurfacePatch->setEnabled(true);
   ui->SurfacePatch->setChecked(false);
 
-  ui->GregoryPatch->setEnabled(true);
-  ui->GregoryPatch->setChecked(false);
+  ui->GregoryQuadPatch->setEnabled(true);
+  ui->GregoryQuadPatch->setChecked(false);
+
+  ui->GregoryTriPatch->setEnabled(true);
+  ui->GregoryTriPatch->setChecked(false);
 
   ui->RenderMesh->setEnabled(true);
   ui->RenderMesh->setChecked(true);
@@ -82,10 +86,18 @@ void MainWindow::on_RenderMesh_toggled(bool checked){
 }
 
 
-void MainWindow::on_GregoryPatch_toggled(bool checked)
+void MainWindow::on_GregoryQuadPatch_toggled(bool checked)
 {
-    ui->MainDisplay->settings.showGregoryPatch = checked;
-    ui->MainDisplay->settings.uniformGregUpdateRequired = true;
+    ui->MainDisplay->settings.showGregoryQuadPatch = checked;
+    ui->MainDisplay->settings.uniformGregQuadUpdateRequired = true;
+    ui->MainDisplay->update();
+}
+
+
+void MainWindow::on_GregoryTriPatch_toggled(bool checked)
+{
+    ui->MainDisplay->settings.showGregoryTriPatch = checked;
+    ui->MainDisplay->settings.uniformGregTriUpdateRequired = true;
     ui->MainDisplay->update();
 }
 
@@ -93,6 +105,8 @@ void MainWindow::on_DiffColors_toggled(bool checked)
 {
     ui->MainDisplay->settings.useDifferentColors = checked;
     ui->MainDisplay->settings.uniformUpdateRequired = true;
+    ui->MainDisplay->settings.uniformGregQuadUpdateRequired = true;
+    ui->MainDisplay->settings.uniformGregTriUpdateRequired = true;
     ui->MainDisplay->update();
 }
 
@@ -106,7 +120,10 @@ void MainWindow::on_Edges_toggled(bool checked)
 void MainWindow::on_Tess_level_valueChanged(int value)
 {
     ui->MainDisplay->settings.tess_level = value;
-    ui->MainDisplay->settings.uniformGregUpdateRequired = true;
+    ui->MainDisplay->settings.uniformGregQuadUpdateRequired = true;
+    ui->MainDisplay->settings.uniformGregTriUpdateRequired = true;
     ui->MainDisplay->settings.uniformTesUpdateRequired = true;
     ui->MainDisplay->update();
+
+    qDebug() << "tess_level set to" << value;
 }

@@ -1,20 +1,20 @@
-#ifndef GREGORYRENDERER_QUAD_H
-#define GREGORYRENDERER_QUAD_H
+#ifndef MESHRENDERER_TRIANGLES_H
+#define MESHRENDERER_TRIANGLES_H
 
 #include <QOpenGLShaderProgram>
 
 #include "renderer.h"
 #include "mesh.h"
 
-class GregoryRendererQuad: public Renderer
+class MeshRendererTriangles : public Renderer
 {
 public:
-    GregoryRendererQuad();
-    ~GregoryRendererQuad();
+    MeshRendererTriangles();
+    ~MeshRendererTriangles();
 
-    void init(QOpenGLFunctions_4_1_Core* f, Settings* s, unsigned int type);
+    void init(QOpenGLFunctions_4_1_Core* f, Settings* s);
 
-    void initShaders(unsigned int type);
+    void initShaders();
     void initBuffers();
 
     void updateUniforms();
@@ -31,9 +31,6 @@ private:
 
     // Uniforms
     GLint uniModelViewMatrix, uniProjectionMatrix, uniNormalMatrix;
-
-    GLfloat uniInnerLevel, uniOuterLevel;
-
 };
 
-#endif // GREGORYRENDERER_QUAD_H
+#endif // MESHRENDERER_TRIANGLES_H

@@ -7,6 +7,9 @@ layout(vertices = 20) out;
 uniform float innerlevel;
 uniform float outerlevel;
 
+//uniform int innerlevel;
+//uniform int outerlevel;
+
 in vec3[] vertcoords_cs;
 
 out vec3[] vertcoords_es;

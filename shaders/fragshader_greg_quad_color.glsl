@@ -6,7 +6,7 @@ out vec4 fColor;
 
 void main() {
 
-  vec3 lightcolour = vec3(0.6, 0.0, 0.7); //purple
+  vec3 lightcolour = vec3(0.85, 0.44, 0.84); //rgb(218,112,214) orchid purple
 
   fColor = vec4(lightcolour, 1.0);
 

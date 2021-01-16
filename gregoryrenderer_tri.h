@@ -12,9 +12,9 @@ public:
     GregoryRendererTriangle();
     ~GregoryRendererTriangle();
 
-    void init(QOpenGLFunctions_4_1_Core* f, Settings* s, unsigned int type);
+    void init(QOpenGLFunctions_4_1_Core* f, Settings* s);
 
-    void initShaders(unsigned int type);
+    void initShaders();
     void initBuffers();
 
     void updateUniforms();

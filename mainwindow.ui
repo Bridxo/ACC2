@@ -66,7 +66,7 @@ QGroupBox::title {
        <property name="geometry">
         <rect>
          <x>20</x>
-         <y>300</y>
+         <y>360</y>
          <width>181</width>
          <height>29</height>
         </rect>
@@ -89,7 +89,7 @@ QGroupBox::title {
        <property name="geometry">
         <rect>
          <x>20</x>
-         <y>270</y>
+         <y>330</y>
          <width>181</width>
          <height>20</height>
         </rect>
@@ -122,12 +122,12 @@ QGroupBox::title {
         <rect>
          <x>30</x>
          <y>140</y>
-         <width>161</width>
+         <width>171</width>
          <height>20</height>
         </rect>
        </property>
        <property name="text">
-        <string>Surface Patches</string>
+        <string>Regular Surface Patches</string>
        </property>
       </widget>
       <widget class="QCheckBox" name="LimitPos">
@@ -146,7 +146,7 @@ QGroupBox::title {
         <string>Limit Positions</string>
        </property>
       </widget>
-      <widget class="QCheckBox" name="GregoryPatch">
+      <widget class="QCheckBox" name="GregoryQuadPatch">
        <property name="enabled">
         <bool>false</bool>
        </property>
@@ -154,19 +154,19 @@ QGroupBox::title {
         <rect>
          <x>30</x>
          <y>170</y>
-         <width>121</width>
+         <width>171</width>
          <height>21</height>
         </rect>
        </property>
        <property name="text">
-        <string>Gregory Patches</string>
+        <string>Gregory Quad Patches</string>
        </property>
       </widget>
       <widget class="QSlider" name="Tess_level">
        <property name="geometry">
         <rect>
          <x>20</x>
-         <y>370</y>
+         <y>430</y>
          <width>181</width>
          <height>29</height>
         </rect>
@@ -197,7 +197,7 @@ QGroupBox::title {
        <property name="geometry">
         <rect>
          <x>20</x>
-         <y>350</y>
+         <y>410</y>
          <width>131</width>
          <height>16</height>
         </rect>
@@ -213,13 +213,13 @@ QGroupBox::title {
        <property name="geometry">
         <rect>
          <x>30</x>
-         <y>200</y>
+         <y>230</y>
          <width>151</width>
          <height>21</height>
         </rect>
        </property>
        <property name="text">
-        <string>Quads and Triangles</string>
+        <string>Use Different Colors</string>
        </property>
       </widget>
       <widget class="QCheckBox" name="Edges">
@@ -229,13 +229,29 @@ QGroupBox::title {
        <property name="geometry">
         <rect>
          <x>30</x>
-         <y>230</y>
+         <y>260</y>
          <width>151</width>
          <height>21</height>
         </rect>
        </property>
        <property name="text">
-        <string>Edges</string>
+        <string>Show Edges</string>
+       </property>
+      </widget>
+      <widget class="QCheckBox" name="GregoryTriPatch">
+       <property name="enabled">
+        <bool>false</bool>
+       </property>
+       <property name="geometry">
+        <rect>
+         <x>30</x>
+         <y>200</y>
+         <width>181</width>
+         <height>21</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>Gregory Triangle Patches</string>
        </property>
       </widget>
      </widget>

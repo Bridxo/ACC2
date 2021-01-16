@@ -1,3 +1,4 @@
+#define _USE_MATH_DEFINES
 #include "mainview.h"
 #include "math.h"
 #include <QLoggingCategory>
@@ -50,8 +51,10 @@ void MainView::initializeGL() {
     trianglemr.init(functions, &settings);
     limr.init(functions, &settings);
     tesr.init(functions, &settings);
-    gregQuadr.init(functions, &settings);
-    gregTrir.init(functions, &settings);
+    gregQuadr.init(functions, &settings, 0);
+    gregColorQuadr.init(functions, &settings, 1);
+    gregTrir.init(functions, &settings, 0);
+    gregColorTrir.init(functions, &settings, 1);
 
     updateMatrices();
 }
@@ -80,7 +83,8 @@ void MainView::updateMatrices() {
     settings.uniformEdgesUpdateRequired = true;
     settings.uniformLimitUpdateRequired = true;
     settings.uniformTesUpdateRequired = true;
-    settings.uniformGregUpdateRequired = true;
+    settings.uniformGregQuadUpdateRequired = true;
+    settings.uniformGregTriUpdateRequired = true;
 
     update();
 }
@@ -93,6 +97,7 @@ void MainView::updateBuffers(Mesh &currentMesh) {
     limr.updateBuffers(currentMesh);
     tesr.updateBuffers(currentMesh);
     gregQuadr.updateBuffers(currentMesh);
+    gregColorQuadr.updateBuffers(currentMesh);
     gregTrir.updateBuffers(currentMesh);
     update();
 }
@@ -145,9 +150,22 @@ void MainView::paintGL() {
 
     }
 
-    if (settings.showGregoryPatch) {
-        gregQuadr.draw();
-        //gregTrir.draw();
+    if (settings.showGregoryQuadPatch) {
+        if (settings.useDifferentColors){
+            qDebug() << "draw Gregory patches using different colors";
+            gregColorQuadr.draw();
+        } else {
+            gregQuadr.draw();
+        }
+    }
+
+    if (settings.showGregoryTriPatch) {
+        if (settings.useDifferentColors){
+            qDebug() << "draw Gregory patches using different colors";
+            gregColorTrir.draw();
+        } else {
+            gregTrir.draw();
+        }
     }
 
 }

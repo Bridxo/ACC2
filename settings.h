@@ -13,7 +13,9 @@ public:
     bool limitPosition;
     bool showSurfacePatch;
     bool showControlMesh;
-    bool showGregoryPatch;
+    bool showGregoryQuadPatch;
+    bool showGregoryTriPatch;
+    bool showGregoryPoints;
     bool useDifferentColors;
     bool showEdges;
 
@@ -25,7 +27,8 @@ public:
     bool uniformEdgesUpdateRequired;
     bool uniformLimitUpdateRequired;
     bool uniformTesUpdateRequired;
-    bool uniformGregUpdateRequired;
+    bool uniformGregQuadUpdateRequired;
+    bool uniformGregTriUpdateRequired;
 
     QMatrix4x4 modelViewMatrix, projectionMatrix;
     QMatrix3x3 normalMatrix;
