@@ -7,10 +7,7 @@ GregoryRendererTriangle::GregoryRendererTriangle()
 
 GregoryRendererTriangle::~GregoryRendererTriangle() {
     gl->glDeleteVertexArrays(1, &vao);
-
     gl->glDeleteBuffers(1, &meshCoordsBO);
-    gl->glDeleteBuffers(1, &meshNormalsBO);
-    gl->glDeleteBuffers(1, &meshIndexBO);
 }
 
 void GregoryRendererTriangle::init(QOpenGLFunctions_4_1_Core* f, Settings* s) {
@@ -23,10 +20,10 @@ void GregoryRendererTriangle::init(QOpenGLFunctions_4_1_Core* f, Settings* s) {
 
 void GregoryRendererTriangle::initShaders() {
     shaderProg.create();
-//        shaderProg.addShaderFromSourceFile(QOpenGLShader::Vertex, ":/shaders/vertshader.glsl");
+//    shaderProg.addShaderFromSourceFile(QOpenGLShader::Vertex, ":/shaders/vertshader.glsl");
     shaderProg.addShaderFromSourceFile(QOpenGLShader::Vertex, ":/shaders/vertshader_surface.glsl");
-//    shaderProg.addShaderFromSourceFile(QOpenGLShader::TessellationControl, ":/shaders/tcs_tri.glsl");
-//    shaderProg.addShaderFromSourceFile(QOpenGLShader::TessellationEvaluation, ":/shaders/tes_tri.glsl");
+    shaderProg.addShaderFromSourceFile(QOpenGLShader::TessellationControl, ":/shaders/tcs_tri.glsl");
+    shaderProg.addShaderFromSourceFile(QOpenGLShader::TessellationEvaluation, ":/shaders/tes_tri.glsl");
     shaderProg.addShaderFromSourceFile(QOpenGLShader::Fragment, ":/shaders/fragshader_greg_tri.glsl");
 
     shaderProg.link();
@@ -99,18 +96,17 @@ void GregoryRendererTriangle::draw() {
 
     shaderProg.bind();
 
-//    if (settings->uniformGregUpdateRequired) {
-//        updateUniforms();
-//        settings->uniformGregUpdateRequired = false;
-//    }
-    updateUniforms();
+    if (settings->uniformGregUpdateRequired) {
+        updateUniforms();
+        settings->uniformGregUpdateRequired = false;
+    }
     gl->glBindVertexArray(vao);
 
     // set number of input vertices to 15
-//    gl->glPatchParameteri(GL_PATCH_VERTICES, 15);
-//    gl->glDrawElements(GL_PATCHES, meshIBOSize, GL_UNSIGNED_INT, 0);
-    gl->glPointSize(4);
-    gl->glDrawArrays(GL_POINTS, 0, meshIBOSize);
+    gl->glPatchParameteri(GL_PATCH_VERTICES, 15);
+    gl->glDrawArrays(GL_PATCHES, 0, meshIBOSize); //meshIBOSize
+//    gl->glPointSize(2);
+//    gl->glDrawArrays(GL_POINTS, 0, 11);
     gl->glBindVertexArray(0);
 
     shaderProg.release();

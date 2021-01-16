@@ -34,34 +34,49 @@ float B2(float u) {
 float B3(float u) {
     return pow(u, 3.0);
 }
-
 vec3 calcPos(float u, float v) {
-    vec3 F0 = (u * vertcoords_es[12] + v * vertcoords_es[13]) / (u + v);
-    vec3 F1 = ((1.0 - u) * vertcoords_es[15] + v * vertcoords_es[14]) / (1.0 - u + v);
-    vec3 F2 = ((1.0 - u) * vertcoords_es[16] + (1.0 - v) * vertcoords_es[17]) / (2.0 - u - v);
-    vec3 F3 = (u * vertcoords_es[19] + (1.0 - v) * vertcoords_es[18]) / (1.0 + u - v);
 
-    return B0(u) * B0(v) * vertcoords_es[0] + //p0
-           B1(u) * B0(v) * vertcoords_es[4]+ //e0+
-           B2(u) * B0(v) * vertcoords_es[7] + //e1-
-           B3(u) * B0(v) * vertcoords_es[1] + //p1
+    //if u,v is in a corner (to avoid zero division)
+    if (u==0.0 && v==0.0){
+        return vertcoords_es[0];
+    } else if (u==0.0 && v==1.0){
+        return vertcoords_es[3];
+    } else if (u==1.0 && v==0.0){
+        return vertcoords_es[1];
+    } else if (u==1.0 && v==1.0){
+        return vertcoords_es[2];
+    }
+    else{
 
-           B0(u) * B1(v) * vertcoords_es[5] + //e0-
-           B1(u) * B1(v) * F0 +               //F0
-           B2(u) * B1(v) * F1 +               //F1
-           B3(u) * B1(v) * vertcoords_es[6]+ //e1+
+        vec3 F0 = (u * vertcoords_es[12] + v * vertcoords_es[13]) / (u + v);
+        vec3 F1 = ((1.0 - u) * vertcoords_es[15] + v * vertcoords_es[14]) / (1.0 - u + v);
+        vec3 F2 = ((1.0 - u) * vertcoords_es[16] + (1.0 - v) * vertcoords_es[17]) / (2.0 - u - v);
+        vec3 F3 = (u * vertcoords_es[19] + (1.0 - v) * vertcoords_es[18]) / (1.0 + u - v);
 
-           B0(u) * B2(v) * vertcoords_es[10] + //e3+
-           B1(u) * B2(v) * F3 +               //F1
-           B2(u) * B2(v) * F2 +               //F2
-           B3(u) * B2(v) * vertcoords_es[9] + //e2-
+        return B0(u) * B0(v) * vertcoords_es[0] + //p0
+               B1(u) * B0(v) * vertcoords_es[4]+ //e0+
+               B2(u) * B0(v) * vertcoords_es[7] + //e1-
+               B3(u) * B0(v) * vertcoords_es[1] + //p1
 
-           B0(u) * B3(v) * vertcoords_es[3] + //p3
-           B1(u) * B3(v) * vertcoords_es[11] + //e3-
-           B2(u) * B3(v) * vertcoords_es[8] +  //e2+
-           B3(u) * B3(v) * vertcoords_es[2];  //p2
+               B0(u) * B1(v) * vertcoords_es[5] + //e0-
+               B1(u) * B1(v) * F0 +               //F0
+               B2(u) * B1(v) * F1 +               //F1
+               B3(u) * B1(v) * vertcoords_es[6]+ //e1+
+
+               B0(u) * B2(v) * vertcoords_es[10] + //e3+
+               B1(u) * B2(v) * F3 +               //F1
+               B2(u) * B2(v) * F2 +               //F2
+               B3(u) * B2(v) * vertcoords_es[9] + //e2-
+
+               B0(u) * B3(v) * vertcoords_es[3] + //p3
+               B1(u) * B3(v) * vertcoords_es[11] + //e3-
+               B2(u) * B3(v) * vertcoords_es[8] +  //e2+
+               B3(u) * B3(v) * vertcoords_es[2];  //p2
+
+    }
+
+
 }
-
 //vec3 calPos2(float u, float v) {
 //    return  (1.0 - u)*(1.0 - v) * vertcoords_es[0] +
 //            u*(1.0 - v)         * vertcoords_es[1] +
@@ -112,7 +127,7 @@ vec3 calcPos(float u, float v) {
 //}
 
 void main() {
-    //ver3
+////    ver3
 //    float u = gl_TessCoord.x;
 //    float v = gl_TessCoord.y;
 //    vec3 F0 = (u * vertcoords_es[12] + v * vertcoords_es[13]) / (u + v);
@@ -131,7 +146,7 @@ void main() {
 //    float bv2 = 3.0 * v * v * (1.0-v);
 //    float bv3 = v * v * v;
 
-//    //u,v, -derivatives
+    //u,v, -derivatives
 //    float dbu0 = -3.0 * (1.0-u) * (1.0-u);
 //    float dbu1 = 3.0 * (1.0-u) * (1.0-3.0*u);
 //    float dbu2 = 3.0 * u * (2.0-3.0*u);
@@ -143,10 +158,10 @@ void main() {
 
 //    // 0  1  2  3  4   5   6   7   8   9   10  11  12  13  14  15  16  17  18  19
 //    // p0 p1 p2 p3 e0+ e0- e1+ e1- e2+ e2- e3+ e3- f0+ f0- f1+ f1- f2+ f2- f3+ f3-
-//    vec3 position = bv0 * ( bu0*vertcoords_es[0] + bu1*vertcoords_es[4] + bu2*vertcoords_es[7] + bu3*vertcoords_es[1] )
-//    + bv1 * ( bu0*vertcoords_es[5] + bu1*F0 + bu2*F1 + bu3*vertcoords_es[6] )
-//    + bv2 * ( bu0*vertcoords_es[10] + bu1*F3 + bu2*F2 + bu3*vertcoords_es[9] )
-//    + bv3 * ( bu0*vertcoords_es[3] + bu1*vertcoords_es[11] + bu2*vertcoords_es[8] + bu3*vertcoords_es[2] );
+//    vec3 position = bu0 * ( bv0*vertcoords_es[0] + bv1*vertcoords_es[4] + bv2*vertcoords_es[7] + bv3*vertcoords_es[1] )
+//    + bu1 * ( bv0*vertcoords_es[5] + bv1*F0 + bv2*F1 + bv3*vertcoords_es[6] )
+//    + bu2 * ( bv0*vertcoords_es[10] + bv1*F3 + bv2*F2 + bv3*vertcoords_es[9] )
+//    + bu3 * ( bv0*vertcoords_es[3] + bv1*vertcoords_es[11] + bv2*vertcoords_es[8] + bv3*vertcoords_es[2] );
 
 //   //ver2
 //    vec3 F0,F1,F2,F3;
@@ -169,14 +184,22 @@ void main() {
 //                    vertcoords_es[1],vertcoords_es[6],vertcoords_es[9],vertcoords_es[2]);
 //    vec3 position = b_u * G * b_v;
 
-    //ver1
     vec3 position = calcPos(gl_TessCoord.x, gl_TessCoord.y);
-//    vec3 position = calPos2(gl_TessCoord.x, gl_TessCoord.y);
-//    vec3 position = calPos3(gl_TessCoord.x, gl_TessCoord.y);
-//    vec3 position = calPos4(gl_TessCoord.x, gl_TessCoord.y);
-//    vec3 position = calPos5(gl_TessCoord.x, gl_TessCoord.y);
-//    vec3 position = calPos6(gl_TessCoord.x, gl_TessCoord.y);
-//    vec3 position = calPos7(gl_TessCoord.x, gl_TessCoord.y);
+    //    // 0  1  2  3  4   5   6   7   8   9   10  11  12  13  14  15  16  17  18  19
+    //    // p0 p1 p2 p3 e0+ e0- e1+ e1- e2+ e2- e3+ e3- f0+ f0- f1+ f1- f2+ f2- f3+ f3-
+//        vec3 position = bu0 * ( bv0*vertcoords_es[0] + bv1*vertcoords_es[4] + bv2*vertcoords_es[7] + bv3*vertcoords_es[1] )
+//        + bu1 * ( bv0*vertcoords_es[5] + bv1*F0 + bv2*F1 + bv3*vertcoords_es[6] )
+//        + bu2 * ( bv0*vertcoords_es[10] + bv1*F3 + bv2*F2 + bv3*vertcoords_es[9] )
+//        + bu3 * ( bv0*vertcoords_es[3] + bv1*vertcoords_es[11] + bv2*vertcoords_es[8] + bv3*vertcoords_es[2] );
+//    vec4 dpdu = dbu0 * ( bv0*p00 + bv1*p01 + bv2*p02 + bv3*p03 )
+//    + dbu1 * ( bv0*p10 + bv1*p11 + bv2*p12 + bv3*p13 )
+//    + dbu2 * ( bv0*p20 + bv1*p21 + bv2*p22 + bv3*p23 )
+//    + dbu3 * ( bv0*p30 + bv1*p31 + bv2*p32 + bv3*p33 );
+//    vec4 dpdv = bu0 * ( dbv0*p00 + dbv1*p01 + dbv2*p02 + dbv3*p03 )
+//    + bu1 * ( dbv0*p10 + dbv1*p11 + dbv2*p12 + dbv3*p13 )
+//    + bu2 * ( dbv0*p20 + dbv1*p21 + dbv2*p22 + dbv3*p23 )
+//    + bu3 * ( dbv0*p30 + dbv1*p31 + dbv2*p32 + dbv3*p33 );
+//    teNormal = normalize( cross( dpdu.xyz, dpdv.xyz ) );
 
     gl_Position = projectionmatrix * modelviewmatrix * vec4(position, 1.0); //finalize value with projection and modelview
 }

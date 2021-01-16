@@ -357,9 +357,9 @@ void Mesh::computeSurfacePatches_v2() { // triangle, quad, but without boundarie
             {
 
 
-                vertexGregoryTriCoords.append(startEdge->target->coords);                     //p0
-                vertexGregoryTriCoords.append(startEdge->next->target->coords);               //p1
-                vertexGregoryTriCoords.append(startEdge->next->next->target->coords);         //p2
+                vertexGregoryTriCoords.append(vertexLimitCoords[startEdge->target->index]);                     //p0
+                vertexGregoryTriCoords.append(vertexLimitCoords[startEdge->next->target->index]);               //p1
+                vertexGregoryTriCoords.append(vertexLimitCoords[startEdge->next->next->target->index]);         //p2
 
                 vertexGregoryTriCoords.append(e[0]);                                               //coord add e0+
                 vertexGregoryTriCoords.append(e[1]);                                               //coord add e0-

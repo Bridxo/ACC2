@@ -148,6 +148,7 @@ void MainView::paintGL() {
 
     if (settings.showGregoryPatch) {
         gregQuadr.draw();
+        settings.uniformGregUpdateRequired = true;
         gregTrir.draw();
     }
 
