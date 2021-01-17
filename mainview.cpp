@@ -50,9 +50,12 @@ void MainView::initializeGL() {
     irregularQuadmr.init(functions, &settings);
     trianglemr.init(functions, &settings);
     limr.init(functions, &settings);
-    tesr.init(functions, &settings);
-    gregQuadr.init(functions, &settings);
-    gregTrir.init(functions, &settings);
+    tesr.init(functions, &settings, false);
+    tesColorr.init(functions, &settings, true);
+    gregQuadr.init(functions, &settings, false);
+    gregColorQuadr.init(functions, &settings, true);
+    gregTrir.init(functions, &settings, false);
+    gregColorTrir.init(functions, &settings, true);
 
     updateMatrices();
 }
@@ -96,8 +99,11 @@ void MainView::updateBuffers(Mesh &currentMesh) {
 }
 void MainView::updateBuffers_2(Mesh &currentMesh) {
     gregQuadr.updateBuffers(currentMesh);
+    gregColorQuadr.updateBuffers(currentMesh);
     gregTrir.updateBuffers(currentMesh);
+    gregColorTrir.updateBuffers(currentMesh);
     tesr.updateBuffers(currentMesh);
+    tesColorr.updateBuffers(currentMesh);
     update();
 }
 
@@ -111,23 +117,15 @@ void MainView::paintGL() {
         glPolygonMode( GL_FRONT_AND_BACK, GL_FILL );
     }
 
-
-   /* if (settings.modelLoaded) {
-        mr.draw();
-    }*/
-
     if (settings.showControlMesh) {
         if (settings.useDifferentColors){
+            mr.draw();
+            settings.uniformUpdateRequired = true;
             regularQuadmr.draw();
             irregularQuadmr.draw();
             trianglemr.draw();
         } else{
             mr.draw();
-        }
-
-        if (settings.showEdges && !settings.wireframeMode){
-            glPolygonMode( GL_FRONT_AND_BACK, GL_LINE );
-            mr.drawEdges();
         }
     }
 
@@ -137,24 +135,44 @@ void MainView::paintGL() {
 
     if (settings.showSurfacePatch) {
         if (settings.useDifferentColors){
-            //triangletesr.draw();
+            tesColorr.draw();
         } else{
             tesr.draw();
         }
-
-        /*if (settings.showEdges && !settings.wireframeMode){
-            glPolygonMode( GL_FRONT_AND_BACK, GL_LINE );
-            tesr.drawEdges();
-        }*/
-
     }
 
     if (settings.showGregoryPatch) {
-        gregQuadr.draw();
-        settings.uniformGregUpdateRequired = true;
-        gregTrir.draw();
+        if (settings.useDifferentColors){
+            gregColorQuadr.draw();
+            settings.uniformGregUpdateRequired = true;
+            gregColorTrir.draw();
+        } else{
+            gregQuadr.draw();
+            settings.uniformGregUpdateRequired = true;
+            gregTrir.draw();
+        }
     }
 
+    if (settings.showEdges && !settings.wireframeMode){
+        if(settings.showControlMesh){
+            glPolygonMode( GL_FRONT_AND_BACK, GL_LINE );
+            mr.drawEdges();
+        }
+
+        if(settings.showSurfacePatch){
+            settings.uniformTesUpdateRequired = true;
+            glPolygonMode( GL_FRONT_AND_BACK, GL_LINE );
+            tesr.drawEdges();
+        }
+
+        if(settings.showGregoryPatch){
+            settings.uniformGregUpdateRequired = true;
+            glPolygonMode( GL_FRONT_AND_BACK, GL_LINE );
+            gregQuadr.drawEdges();
+            settings.uniformGregUpdateRequired = true;
+            gregTrir.drawEdges();
+        }
+    }
 }
 
 QVector2D MainView::toNormalizedScreenCoordinates(int x, int y) {

@@ -13,21 +13,28 @@ TessellationRenderer::~TessellationRenderer() {
     gl->glDeleteBuffers(1, &meshIndexBO);
 }
 
-void TessellationRenderer::init(QOpenGLFunctions_4_1_Core* f, Settings* s) {
+void TessellationRenderer::init(QOpenGLFunctions_4_1_Core* f, Settings* s, bool colors) {
     gl = f;
     settings = s;
 
-    initShaders();
+    initShaders(colors);
     initBuffers();
 }
 
-void TessellationRenderer::initShaders() {
+void TessellationRenderer::initShaders(bool colors) {
     shaderProg.create();
 
     shaderProg.addShaderFromSourceFile(QOpenGLShader::Vertex, ":/shaders/vertshader_surface.glsl");
     shaderProg.addShaderFromSourceFile(QOpenGLShader::TessellationControl, ":/shaders/tcs.glsl");
     shaderProg.addShaderFromSourceFile(QOpenGLShader::TessellationEvaluation, ":/shaders/tes.glsl");
-    shaderProg.addShaderFromSourceFile(QOpenGLShader::Fragment, ":/shaders/fragshader_surface.glsl");
+
+    if (colors){
+        shaderProg.addShaderFromSourceFile(QOpenGLShader::Fragment, ":/shaders/fragshader_surface.glsl");
+
+    } else {
+        shaderProg.addShaderFromSourceFile(QOpenGLShader::Fragment, ":/shaders/fragshader_acc2_surface.glsl");
+
+    }
 
     shaderProg.link();
 
@@ -37,6 +44,15 @@ void TessellationRenderer::initShaders() {
 
     uniInnerLevel = gl->glGetUniformLocation(shaderProg.programId(), "innerlevel");
     uniOuterLevel = gl->glGetUniformLocation(shaderProg.programId(), "outerlevel");
+
+    shaderEdgesProg.create();
+
+    shaderEdgesProg.addShaderFromSourceFile(QOpenGLShader::Vertex, ":/shaders/vertshader_surface.glsl");
+    shaderEdgesProg.addShaderFromSourceFile(QOpenGLShader::TessellationControl, ":/shaders/tcs.glsl");
+    shaderEdgesProg.addShaderFromSourceFile(QOpenGLShader::TessellationEvaluation, ":/shaders/tes.glsl");
+    shaderEdgesProg.addShaderFromSourceFile(QOpenGLShader::Fragment, ":/shaders/fragshaderEdges.glsl");
+
+    shaderEdgesProg.link();
 
 }
 
@@ -126,10 +142,29 @@ void TessellationRenderer::draw() {
 
     // set number of input vertices to 16
     gl->glPatchParameteri(GL_PATCH_VERTICES, 16);
-    //gl->glDrawElements(GL_PATCHES, meshIBOSize, GL_UNSIGNED_INT, 0);
     gl->glDrawArrays(GL_PATCHES, 0, meshIBOSize);
     gl->glBindVertexArray(0);
 
     shaderProg.release();
+
+}
+
+void TessellationRenderer::drawEdges() {
+
+    shaderEdgesProg.bind();
+
+    if (settings->uniformTesUpdateRequired) {
+        updateUniforms();
+        settings->uniformTesUpdateRequired = false;
+    }
+
+    gl->glBindVertexArray(vao);
+
+    // set number of input vertices to 16
+    gl->glPatchParameteri(GL_PATCH_VERTICES, 16);
+    gl->glDrawArrays(GL_PATCHES, 0, meshIBOSize);
+    gl->glBindVertexArray(0);
+
+    shaderEdgesProg.release();
 
 }

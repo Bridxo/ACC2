@@ -10,21 +10,26 @@ GregoryRendererTriangle::~GregoryRendererTriangle() {
     gl->glDeleteBuffers(1, &meshCoordsBO);
 }
 
-void GregoryRendererTriangle::init(QOpenGLFunctions_4_1_Core* f, Settings* s) {
+void GregoryRendererTriangle::init(QOpenGLFunctions_4_1_Core* f, Settings* s, bool colors) {
     gl = f;
     settings = s;
 
-    initShaders();
+    initShaders(colors);
     initBuffers();
 }
 
-void GregoryRendererTriangle::initShaders() {
+void GregoryRendererTriangle::initShaders(bool colors) {
     shaderProg.create();
-//    shaderProg.addShaderFromSourceFile(QOpenGLShader::Vertex, ":/shaders/vertshader.glsl");
+
     shaderProg.addShaderFromSourceFile(QOpenGLShader::Vertex, ":/shaders/vertshader_surface.glsl");
     shaderProg.addShaderFromSourceFile(QOpenGLShader::TessellationControl, ":/shaders/tcs_tri.glsl");
     shaderProg.addShaderFromSourceFile(QOpenGLShader::TessellationEvaluation, ":/shaders/tes_tri.glsl");
-    shaderProg.addShaderFromSourceFile(QOpenGLShader::Fragment, ":/shaders/fragshader_greg_tri.glsl");
+
+    if (colors){
+        shaderProg.addShaderFromSourceFile(QOpenGLShader::Fragment, ":/shaders/fragshader_greg_tri.glsl");
+    } else{
+        shaderProg.addShaderFromSourceFile(QOpenGLShader::Fragment, ":/shaders/fragshader_acc2_surface.glsl");
+    }
 
     shaderProg.link();
 
@@ -34,6 +39,15 @@ void GregoryRendererTriangle::initShaders() {
 
     uniInnerLevel = gl->glGetUniformLocation(shaderProg.programId(), "innerlevel");
     uniOuterLevel = gl->glGetUniformLocation(shaderProg.programId(), "outerlevel");
+
+    shaderEdgesProg.create();
+
+    shaderEdgesProg.addShaderFromSourceFile(QOpenGLShader::Vertex, ":/shaders/vertshader_surface.glsl");
+    shaderEdgesProg.addShaderFromSourceFile(QOpenGLShader::TessellationControl, ":/shaders/tcs_tri.glsl");
+    shaderEdgesProg.addShaderFromSourceFile(QOpenGLShader::TessellationEvaluation, ":/shaders/tes_tri.glsl");
+    shaderEdgesProg.addShaderFromSourceFile(QOpenGLShader::Fragment, ":/shaders/fragshaderEdges.glsl");
+
+    shaderEdgesProg.link();
 
 }
 
@@ -105,11 +119,28 @@ void GregoryRendererTriangle::draw() {
     // set number of input vertices to 15
     gl->glPatchParameteri(GL_PATCH_VERTICES, 15);
     gl->glDrawArrays(GL_PATCHES, 0, meshIBOSize); //meshIBOSize
-//    gl->glPointSize(2);
-//    gl->glDrawArrays(GL_POINTS, 0, 11);
     gl->glBindVertexArray(0);
 
     shaderProg.release();
+
+}
+
+void GregoryRendererTriangle::drawEdges() {
+
+    shaderEdgesProg.bind();
+
+    if (settings->uniformGregUpdateRequired) {
+        updateUniforms();
+        settings->uniformGregUpdateRequired = false;
+    }
+    gl->glBindVertexArray(vao);
+
+    // set number of input vertices to 15
+    gl->glPatchParameteri(GL_PATCH_VERTICES, 15);
+    gl->glDrawArrays(GL_PATCHES, 0, meshIBOSize); //meshIBOSize
+    gl->glBindVertexArray(0);
+
+    shaderEdgesProg.release();
 
 }
 

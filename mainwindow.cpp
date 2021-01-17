@@ -120,6 +120,8 @@ void MainWindow::on_DiffColors_toggled(bool checked)
 {
     ui->MainDisplay->settings.useDifferentColors = checked;
     ui->MainDisplay->settings.uniformUpdateRequired = true;
+    ui->MainDisplay->settings.uniformTesUpdateRequired = true;
+    ui->MainDisplay->settings.uniformGregUpdateRequired = true;
     ui->MainDisplay->update();
 }
 
@@ -127,6 +129,8 @@ void MainWindow::on_Edges_toggled(bool checked)
 {
     ui->MainDisplay->settings.showEdges = checked;
     ui->MainDisplay->settings.uniformEdgesUpdateRequired = true;
+    ui->MainDisplay->settings.uniformTesUpdateRequired = true;
+    ui->MainDisplay->settings.uniformGregUpdateRequired = true;
     ui->MainDisplay->update();
 }
 
@@ -135,6 +139,7 @@ void MainWindow::on_Tess_level_valueChanged(int value)
     ui->MainDisplay->settings.tess_level = value;
     ui->MainDisplay->settings.uniformGregUpdateRequired = true;
     ui->MainDisplay->settings.uniformTesUpdateRequired = true;
+    ui->MainDisplay->settings.uniformGregUpdateRequired = true;
     ui->MainDisplay->update();
 }
 

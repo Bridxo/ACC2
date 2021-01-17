@@ -19,5 +19,7 @@
         <file>shaders/fragshader_irregular_quads.glsl</file>
         <file>shaders/fragshader_regular_quads.glsl</file>
         <file>shaders/fragshaderEdges.glsl</file>
+        <file>shaders/fragshader_surface_green.glsl</file>
+        <file>shaders/fragshader_acc2_surface.glsl</file>
     </qresource>
 </RCC>

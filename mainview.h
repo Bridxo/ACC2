@@ -58,8 +58,11 @@ private:
   MeshRendererTriangles trianglemr;
   LimitRenderer limr;
   TessellationRenderer tesr;
+  TessellationRenderer tesColorr;
   GregoryRendererQuad gregQuadr;
+  GregoryRendererQuad gregColorQuadr;
   GregoryRendererTriangle gregTrir;
+  GregoryRendererTriangle gregColorTrir;
 
   //we make mainwindow a friend so it can access settings and the currentMesh
   friend class MainWindow;
