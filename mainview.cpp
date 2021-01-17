@@ -92,9 +92,12 @@ void MainView::updateBuffers(Mesh &currentMesh) {
     irregularQuadmr.updateBuffers(currentMesh);
     trianglemr.updateBuffers(currentMesh);
     limr.updateBuffers(currentMesh);
-    tesr.updateBuffers(currentMesh);
+    update();
+}
+void MainView::updateBuffers_2(Mesh &currentMesh) {
     gregQuadr.updateBuffers(currentMesh);
     gregTrir.updateBuffers(currentMesh);
+    tesr.updateBuffers(currentMesh);
     update();
 }
 

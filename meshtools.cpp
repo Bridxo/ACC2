@@ -110,11 +110,11 @@ void Mesh::computeSurfacePatches() {
 
     }
 
-    qDebug() << "total number of regular quads is" << count_quads;
+//    qDebug() << "total number of regular quads is" << count_quads;
 
-    qDebug() << "controlPointIndices size" << controlPointIndices.size();
+//    qDebug() << "controlPointIndices size" << controlPointIndices.size();
 
-    qDebug() << "vertexSurfaceCoords size" << vertexSurfaceCoords.size();
+//    qDebug() << "vertexSurfaceCoords size" << vertexSurfaceCoords.size();
 
 }
 void Mesh::computeSurfacePatches_v2() { // triangle, quad, but without boundaries
@@ -162,7 +162,7 @@ void Mesh::computeSurfacePatches_v2() { // triangle, quad, but without boundarie
 
         //abnormal case
         if(currentFaceVal != 4 && currentFaceVal != 3) {
-            qDebug()<<"The face at index " << k << "is not a quad nor triangle";
+//            qDebug()<<"The face at index " << k << "is not a quad nor triangle";
         }
 
         if( (currentFaceVal == 4 && !(
@@ -314,24 +314,24 @@ void Mesh::computeSurfacePatches_v2() { // triangle, quad, but without boundarie
                                        r[e0_minus_ind]) //f-
                           );
 
-                qDebug() << "f values" << f;
+//                qDebug() << "f values" << f;
 
                 currentEdge = currentEdge->next; //move to next vertex point
             }
 
 
-            qDebug() << "####Add coordinates to vertexGregoryQuadCoords";
+//            qDebug() << "####Add coordinates to vertexGregoryQuadCoords";
             //Add coordinates (Corner, Edge and Face points)
             if(currentFaceVal == 4){     // quad
 
-                qDebug() << "append corner points";
+//                qDebug() << "append corner points";
                 vertexGregoryQuadCoords.append(vertexLimitCoords[startEdge->target->index]);                     //p0
                 vertexGregoryQuadCoords.append(vertexLimitCoords[startEdge->next->target->index]);               //p1
                 vertexGregoryQuadCoords.append(vertexLimitCoords[startEdge->next->next->target->index]);         //p2
                 vertexGregoryQuadCoords.append(vertexLimitCoords[startEdge->next->next->next->target->index]);   //p3
 
-                qDebug() << "append edge points";
-                qDebug() << "e" << e;
+//                qDebug() << "append edge points";
+//                qDebug() << "e" << e;
                 vertexGregoryQuadCoords.append(e[0]);                                               //coord add e0+
                 vertexGregoryQuadCoords.append(e[1]);                                               //coord add e0-
                 vertexGregoryQuadCoords.append(e[2]);                                               //coord add e1+
@@ -385,7 +385,7 @@ void Mesh::computeSurfacePatches_v2() { // triangle, quad, but without boundarie
 
     } // Looping on all Faces
 
-    qDebug() << "Finished calculating Gregory patches";
+//    qDebug() << "Finished calculating Gregory patches";
 }
 
 
@@ -567,7 +567,7 @@ void Mesh::subdivideCatmullClark(Mesh& mesh) {
         vIndex++;
     }
 
-    qDebug() << " * Created vertex points";
+//    qDebug() << " * Created vertex points";
 
     // Create edge points
     for (k=0; k<numHalfEdges; k++) {
@@ -584,13 +584,13 @@ void Mesh::subdivideCatmullClark(Mesh& mesh) {
         }
     }
 
-    qDebug() << " * Created edge points";
+//    qDebug() << " * Created edge points";
 
 
     // Split halfedges
     splitHalfEdges(newVertices, newHalfEdges);
 
-    qDebug() << " * Split halfedges";
+//    qDebug() << " * Split halfedges";
 
     hIndex = 2*numHalfEdges;
     fIndex = 0;

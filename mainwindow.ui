@@ -59,19 +59,6 @@ QGroupBox::title {
       <property name="title">
        <string>Settings</string>
       </property>
-      <widget class="QSpinBox" name="SubdivSteps">
-       <property name="enabled">
-        <bool>false</bool>
-       </property>
-       <property name="geometry">
-        <rect>
-         <x>20</x>
-         <y>360</y>
-         <width>181</width>
-         <height>29</height>
-        </rect>
-       </property>
-      </widget>
       <widget class="QPushButton" name="ImportOBJ">
        <property name="geometry">
         <rect>
@@ -85,143 +72,6 @@ QGroupBox::title {
         <string>Import OBJ file</string>
        </property>
       </widget>
-      <widget class="QLabel" name="StepsLabel">
-       <property name="geometry">
-        <rect>
-         <x>20</x>
-         <y>330</y>
-         <width>181</width>
-         <height>20</height>
-        </rect>
-       </property>
-       <property name="text">
-        <string>Catmull-Clark steps</string>
-       </property>
-      </widget>
-      <widget class="QCheckBox" name="RenderMesh">
-       <property name="enabled">
-        <bool>false</bool>
-       </property>
-       <property name="geometry">
-        <rect>
-         <x>30</x>
-         <y>80</y>
-         <width>161</width>
-         <height>20</height>
-        </rect>
-       </property>
-       <property name="text">
-        <string>Mesh</string>
-       </property>
-      </widget>
-      <widget class="QCheckBox" name="SurfacePatch">
-       <property name="enabled">
-        <bool>false</bool>
-       </property>
-       <property name="geometry">
-        <rect>
-         <x>30</x>
-         <y>140</y>
-         <width>171</width>
-         <height>20</height>
-        </rect>
-       </property>
-       <property name="text">
-        <string>Regular Surface Patches</string>
-       </property>
-      </widget>
-      <widget class="QCheckBox" name="LimitPos">
-       <property name="enabled">
-        <bool>false</bool>
-       </property>
-       <property name="geometry">
-        <rect>
-         <x>30</x>
-         <y>110</y>
-         <width>161</width>
-         <height>20</height>
-        </rect>
-       </property>
-       <property name="text">
-        <string>Limit Positions</string>
-       </property>
-      </widget>
-      <widget class="QCheckBox" name="GregoryPatch">
-       <property name="enabled">
-        <bool>false</bool>
-       </property>
-       <property name="geometry">
-        <rect>
-         <x>30</x>
-         <y>170</y>
-         <width>121</width>
-         <height>21</height>
-        </rect>
-       </property>
-       <property name="text">
-        <string>Gregory Patches</string>
-       </property>
-      </widget>
-      <widget class="QSlider" name="Tess_level">
-       <property name="geometry">
-        <rect>
-         <x>20</x>
-         <y>430</y>
-         <width>181</width>
-         <height>29</height>
-        </rect>
-       </property>
-       <property name="minimum">
-        <number>1</number>
-       </property>
-       <property name="maximum">
-        <number>15</number>
-       </property>
-       <property name="singleStep">
-        <number>1</number>
-       </property>
-       <property name="pageStep">
-        <number>1</number>
-       </property>
-       <property name="orientation">
-        <enum>Qt::Horizontal</enum>
-       </property>
-       <property name="tickPosition">
-        <enum>QSlider::TicksAbove</enum>
-       </property>
-       <property name="tickInterval">
-        <number>1</number>
-       </property>
-      </widget>
-      <widget class="QLabel" name="label">
-       <property name="geometry">
-        <rect>
-         <x>20</x>
-         <y>410</y>
-         <width>131</width>
-         <height>16</height>
-        </rect>
-       </property>
-       <property name="text">
-        <string>Tessellation Level</string>
-       </property>
-      </widget>
-      <widget class="QCheckBox" name="DiffColors">
-       <property name="enabled">
-        <bool>false</bool>
-       </property>
-       <property name="geometry">
-        <rect>
-         <x>30</x>
-         <y>200</y>
-         <width>151</width>
-         <height>21</height>
-        </rect>
-       </property>
-       <property name="text">
-        <string>Quads and Triangles</string>
-       </property>
-      </widget>
       <widget class="QCheckBox" name="Edges">
        <property name="enabled">
         <bool>false</bool>
@@ -229,7 +79,7 @@ QGroupBox::title {
        <property name="geometry">
         <rect>
          <x>30</x>
-         <y>230</y>
+         <y>630</y>
          <width>151</width>
          <height>21</height>
         </rect>
@@ -237,6 +87,237 @@ QGroupBox::title {
        <property name="text">
         <string>Edges</string>
        </property>
+      </widget>
+      <widget class="QGroupBox" name="groupBox">
+       <property name="geometry">
+        <rect>
+         <x>20</x>
+         <y>310</y>
+         <width>181</width>
+         <height>231</height>
+        </rect>
+       </property>
+       <property name="title">
+        <string>ACC2</string>
+       </property>
+       <widget class="QCheckBox" name="SurfacePatch">
+        <property name="enabled">
+         <bool>false</bool>
+        </property>
+        <property name="geometry">
+         <rect>
+          <x>10</x>
+          <y>30</y>
+          <width>171</width>
+          <height>20</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string>Regular Surface Patches</string>
+        </property>
+       </widget>
+       <widget class="QCheckBox" name="GregoryPatch">
+        <property name="enabled">
+         <bool>false</bool>
+        </property>
+        <property name="geometry">
+         <rect>
+          <x>10</x>
+          <y>60</y>
+          <width>121</width>
+          <height>21</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string>Gregory Patches</string>
+        </property>
+       </widget>
+       <widget class="QLabel" name="label">
+        <property name="geometry">
+         <rect>
+          <x>10</x>
+          <y>130</y>
+          <width>131</width>
+          <height>16</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string>Tessellation Level</string>
+        </property>
+       </widget>
+       <widget class="QSlider" name="Tess_level">
+        <property name="geometry">
+         <rect>
+          <x>10</x>
+          <y>150</y>
+          <width>161</width>
+          <height>29</height>
+         </rect>
+        </property>
+        <property name="minimum">
+         <number>1</number>
+        </property>
+        <property name="maximum">
+         <number>30</number>
+        </property>
+        <property name="singleStep">
+         <number>1</number>
+        </property>
+        <property name="pageStep">
+         <number>1</number>
+        </property>
+        <property name="orientation">
+         <enum>Qt::Horizontal</enum>
+        </property>
+        <property name="tickPosition">
+         <enum>QSlider::TicksAbove</enum>
+        </property>
+        <property name="tickInterval">
+         <number>1</number>
+        </property>
+       </widget>
+       <widget class="QCheckBox" name="checkBox">
+        <property name="enabled">
+         <bool>false</bool>
+        </property>
+        <property name="geometry">
+         <rect>
+          <x>10</x>
+          <y>90</y>
+          <width>141</width>
+          <height>20</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string>Follow Subdiv level</string>
+        </property>
+        <property name="checked">
+         <bool>false</bool>
+        </property>
+       </widget>
+       <widget class="QLCDNumber" name="ACC2_S_count">
+        <property name="geometry">
+         <rect>
+          <x>10</x>
+          <y>200</y>
+          <width>64</width>
+          <height>23</height>
+         </rect>
+        </property>
+       </widget>
+       <widget class="QLabel" name="label_2">
+        <property name="geometry">
+         <rect>
+          <x>10</x>
+          <y>180</y>
+          <width>131</width>
+          <height>16</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string>Based Subdivision Level</string>
+        </property>
+       </widget>
+      </widget>
+      <widget class="QGroupBox" name="groupBox_2">
+       <property name="geometry">
+        <rect>
+         <x>20</x>
+         <y>550</y>
+         <width>181</width>
+         <height>51</height>
+        </rect>
+       </property>
+       <property name="title">
+        <string>Mesh Coloring</string>
+       </property>
+       <widget class="QCheckBox" name="DiffColors">
+        <property name="enabled">
+         <bool>false</bool>
+        </property>
+        <property name="geometry">
+         <rect>
+          <x>10</x>
+          <y>20</y>
+          <width>151</width>
+          <height>21</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string>Quads and Triangles</string>
+        </property>
+       </widget>
+      </widget>
+      <widget class="QGroupBox" name="groupBox_3">
+       <property name="geometry">
+        <rect>
+         <x>20</x>
+         <y>100</y>
+         <width>181</width>
+         <height>191</height>
+        </rect>
+       </property>
+       <property name="title">
+        <string>Catmull-clark</string>
+       </property>
+       <widget class="QLabel" name="StepsLabel">
+        <property name="geometry">
+         <rect>
+          <x>10</x>
+          <y>120</y>
+          <width>131</width>
+          <height>20</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string>Subdivision steps</string>
+        </property>
+       </widget>
+       <widget class="QSpinBox" name="SubdivSteps">
+        <property name="enabled">
+         <bool>false</bool>
+        </property>
+        <property name="geometry">
+         <rect>
+          <x>10</x>
+          <y>150</y>
+          <width>101</width>
+          <height>29</height>
+         </rect>
+        </property>
+       </widget>
+       <widget class="QCheckBox" name="RenderMesh">
+        <property name="enabled">
+         <bool>false</bool>
+        </property>
+        <property name="geometry">
+         <rect>
+          <x>10</x>
+          <y>20</y>
+          <width>161</width>
+          <height>20</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string>Catmull-clark surface</string>
+        </property>
+       </widget>
+       <widget class="QCheckBox" name="LimitPos">
+        <property name="enabled">
+         <bool>false</bool>
+        </property>
+        <property name="geometry">
+         <rect>
+          <x>10</x>
+          <y>50</y>
+          <width>161</width>
+          <height>20</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string>Limit Positions</string>
+        </property>
+       </widget>
       </widget>
      </widget>
     </item>
@@ -255,7 +336,7 @@ QGroupBox::title {
   <customwidget>
    <class>MainView</class>
    <extends>QOpenGLWidget</extends>
-   <header>mainview.h</header>
+   <header location="global">mainview.h</header>
   </customwidget>
  </customwidgets>
  <resources/>

@@ -17,6 +17,7 @@ public:
     bool showGregoryPoints;
     bool useDifferentColors;
     bool showEdges;
+    bool update_CC;
 
     float FoV;
     float dispRatio;
@@ -31,6 +32,8 @@ public:
     QMatrix4x4 modelViewMatrix, projectionMatrix;
     QMatrix3x3 normalMatrix;
     int tess_level;
+    int subdiv_value;
+    int subdiv_value_2;
 };
 
 #endif // SETTINGS_H

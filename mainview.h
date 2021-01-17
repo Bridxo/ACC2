@@ -28,6 +28,7 @@ public:
     void updateMatrices();
     void updateUniforms();
     void updateBuffers(Mesh& currentMesh);
+    void updateBuffers_2(Mesh& currentMesh);
 
 protected:
     void initializeGL();

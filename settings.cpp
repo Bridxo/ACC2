@@ -12,7 +12,10 @@ Settings::Settings()
     showSurfacePatch = false;
     showControlMesh = false;
     showGregoryPatch = false;
+    update_CC = false;
 
+    subdiv_value = 0;
+    subdiv_value_2 = 0;
     rotAngle = 0.0;
     dispRatio = 16.0/9.0;
     FoV = 120.0;

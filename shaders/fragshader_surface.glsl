@@ -6,7 +6,7 @@ out vec4 fColor;
 
 void main() {
 
-  vec3 lightcolour = vec3(0.0, 1.0, 0.0); //green
+  vec3 lightcolour = vec3(0.81, 0.71, 0.23); //old gold
 
   fColor = vec4(lightcolour, 1.0);
 
