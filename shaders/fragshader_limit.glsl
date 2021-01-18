@@ -1,5 +1,5 @@
 #version 410
-// Fragment shader
+// Fragment shader for limit position
 
 
 layout (location = 0) in vec3 vertlimitcoords_camera_fs;

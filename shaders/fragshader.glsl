@@ -1,5 +1,5 @@
 #version 410
-// Fragment shader
+// Fragment shader for Original Mesh
 
 layout (location = 0) in vec3 vertcoords_camera_fs;
 layout (location = 1) in vec3 vertnormal_camera_fs;

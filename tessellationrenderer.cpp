@@ -72,15 +72,6 @@ void TessellationRenderer::initBuffers() {
     //tell the currently bound vao what the layout is of the meshCoordsBO
     gl->glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, 0);
 
-    //gl->glGenBuffers(1, &meshNormalsBO);
-    //gl->glBindBuffer(GL_ARRAY_BUFFER, meshNormalsBO);
-    //gl->glEnableVertexAttribArray(1);
-    //gl->glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 0, 0);
-
-
-    //gl->glGenBuffers(1, &meshIndexBO);
-    //gl->glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, meshIndexBO);
-
     //unbind
     gl->glBindVertexArray(0);
 
@@ -88,34 +79,16 @@ void TessellationRenderer::initBuffers() {
 
 void TessellationRenderer::updateBuffers(Mesh& currentMesh) {
 
-    qDebug() << ".. updateBuffers";
+//    qDebug() << ".. updateBuffers";
 
     //gather attributes for current mesh
     currentMesh.extractAttributes();
-    QVector<QVector3D>& vertexCoords = currentMesh.getVertexCoords();
-    QVector<QVector3D>& vertexNormals = currentMesh.getVertexNorms();
     QVector<QVector3D>& vertexSurfaceCoords = currentMesh.getVertexSurfaceCoords(); //to test
-    QVector<unsigned int>& controlPointIndices = currentMesh.getControlPointIndices();
 
-    qDebug() << "controlPointIndices size" << controlPointIndices.size();
+//    qDebug() << "controlPointIndices size" << controlPointIndices.size();
 
     gl->glBindBuffer(GL_ARRAY_BUFFER, meshCoordsBO);
-//    gl->glBufferData(GL_ARRAY_BUFFER, sizeof(QVector3D)*vertexCoords.size(), vertexCoords.data(), GL_DYNAMIC_DRAW);
     gl->glBufferData(GL_ARRAY_BUFFER, sizeof(QVector3D)*vertexSurfaceCoords.size(), vertexSurfaceCoords.data(), GL_DYNAMIC_DRAW);
-
-    qDebug() << " → Updated meshCoordsBO for tessellation";
-
-    //gl->glBindBuffer(GL_ARRAY_BUFFER, meshNormalsBO);
-    //gl->glBufferData(GL_ARRAY_BUFFER, sizeof(QVector3D)*vertexNormals.size(), vertexNormals.data(), GL_DYNAMIC_DRAW);
-
-    qDebug() << " → Updated meshNormalsBO for tessellation";
-
-    //gl->glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, meshIndexBO);
-    //gl->glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(unsigned int)*controlPointIndices.size(), controlPointIndices.data(), GL_DYNAMIC_DRAW);
-
-    //qDebug() << " → Updated meshIndexBO for tessellation";
-
-    //meshIBOSize = controlPointIndices.size();
 
     meshIBOSize = vertexSurfaceCoords.size();
 }

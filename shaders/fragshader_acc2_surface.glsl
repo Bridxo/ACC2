@@ -1,5 +1,5 @@
 #version 410
-// Fragment shader
+// Fragment shader for ACC2 Surface
 
 
 out vec4 fColor;

@@ -65,7 +65,7 @@ void MeshRenderer::initBuffers() {
 
 void MeshRenderer::updateBuffers(Mesh& currentMesh) {
 
-    qDebug() << ".. updateBuffers";
+//    qDebug() << ".. updateBuffers";
 
     //gather attributes for current mesh
     currentMesh.extractAttributes();
@@ -74,29 +74,29 @@ void MeshRenderer::updateBuffers(Mesh& currentMesh) {
 
     QVector<unsigned int>& polyIndices = currentMesh.getPolyIndices();
 
-    qDebug() << "vertexCoords size" << vertexCoords.size();
-    qDebug() << "polyIndices size" << polyIndices.size();
+//    qDebug() << "vertexCoords size" << vertexCoords.size();
+//    qDebug() << "polyIndices size" << polyIndices.size();
 
     gl->glBindBuffer(GL_ARRAY_BUFFER, meshCoordsBO);
     gl->glBufferData(GL_ARRAY_BUFFER, sizeof(QVector3D)*vertexCoords.size(), vertexCoords.data(), GL_DYNAMIC_DRAW);
 
-    qDebug() << " → Updated meshCoordsBO";
+//    qDebug() << " → Updated meshCoordsBO";
 
     gl->glBindBuffer(GL_ARRAY_BUFFER, meshNormalsBO);
     gl->glBufferData(GL_ARRAY_BUFFER, sizeof(QVector3D)*vertexNormals.size(), vertexNormals.data(), GL_DYNAMIC_DRAW);
 
-    qDebug() << " → Updated meshNormalsBO";
+//    qDebug() << " → Updated meshNormalsBO";
 
     gl->glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, meshIndexBO);
     gl->glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(unsigned int)*polyIndices.size(), polyIndices.data(), GL_DYNAMIC_DRAW);
 
-    qDebug() << " → Updated meshIndexBO";
+//    qDebug() << " → Updated meshIndexBO";
 
     meshIBOSize = polyIndices.size();
 }
 
 void MeshRenderer::updateUniforms() {
-    //qDebug() << "###update uniforms in meshrenderer###";
+//    qDebug() << "###update uniforms in meshrenderer###";
     gl->glUniformMatrix4fv(uniModelViewMatrix, 1, false, settings->modelViewMatrix.data());
     gl->glUniformMatrix4fv(uniProjectionMatrix, 1, false, settings->projectionMatrix.data());
     gl->glUniformMatrix3fv(uniNormalMatrix, 1, false, settings->normalMatrix.data());

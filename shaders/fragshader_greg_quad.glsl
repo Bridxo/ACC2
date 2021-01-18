@@ -1,6 +1,5 @@
 #version 410
-// Fragment shader
-
+// Fragment shader for Gregory quad
 
 out vec4 fColor;
 

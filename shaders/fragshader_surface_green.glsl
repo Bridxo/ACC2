@@ -1,5 +1,5 @@
 #version 410
-// Fragment shader
+// Fragment shader with green surface (basic)
 
 
 out vec4 fColor;

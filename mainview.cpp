@@ -4,20 +4,20 @@
 #include <QLoggingCategory>
 
 MainView::MainView(QWidget *Parent) : QOpenGLWidget(Parent) {
-    qDebug() << "✓✓ MainView constructor";
+//    qDebug() << "✓✓ MainView constructor";
 
     scale = 1.0f;
 }
 
 MainView::~MainView() {
-    qDebug() << "✗✗ MainView destructor";
+//    qDebug() << "✗✗ MainView destructor";
     makeCurrent();
 }
 
 void MainView::initializeGL() {
 
     initializeOpenGLFunctions();
-    qDebug() << ":: OpenGL initialized";
+//    qDebug() << ":: OpenGL initialized";
 
     connect(&debugLogger, SIGNAL( messageLogged( QOpenGLDebugMessage ) ), this, SLOT( onMessageLogged( QOpenGLDebugMessage ) ), Qt::DirectConnection );
 
@@ -25,14 +25,14 @@ void MainView::initializeGL() {
         QLoggingCategory::setFilterRules("qt.*=false\n"
                                          "qt.text.font.*=false");
 
-        qDebug() << ":: Logging initialized";
+//        qDebug() << ":: Logging initialized";
         debugLogger.startLogging( QOpenGLDebugLogger::SynchronousLogging );
         debugLogger.enableMessages();
     }
 
     QString glVersion;
     glVersion = reinterpret_cast<const char*>(glGetString(GL_VERSION));
-    qDebug() << ":: Using OpenGL" << qPrintable(glVersion);
+//    qDebug() << ":: Using OpenGL" << qPrintable(glVersion);
 
     makeCurrent();
 
@@ -61,7 +61,7 @@ void MainView::initializeGL() {
 }
 
 void MainView::resizeGL(int newWidth, int newHeight) {
-    qDebug() << ".. resizeGL";
+//    qDebug() << ".. resizeGL";
 
     settings.dispRatio = float(newWidth)/float(newHeight);
 
@@ -90,6 +90,7 @@ void MainView::updateMatrices() {
 }
 
 void MainView::updateBuffers(Mesh &currentMesh) {
+    // update renderers here with the current mesh
     mr.updateBuffers(currentMesh);
     regularQuadmr.updateBuffers(currentMesh);
     irregularQuadmr.updateBuffers(currentMesh);
@@ -98,6 +99,7 @@ void MainView::updateBuffers(Mesh &currentMesh) {
     update();
 }
 void MainView::updateBuffers_2(Mesh &currentMesh) {
+    // update renderers here with the current mesh_mainly on the Gregory patches
     gregQuadr.updateBuffers(currentMesh);
     gregColorQuadr.updateBuffers(currentMesh);
     gregTrir.updateBuffers(currentMesh);
@@ -111,13 +113,13 @@ void MainView::paintGL() {
     glClearColor(0.0, 0.0, 0.0, 1.0);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-    if (settings.wireframeMode) {
+    if (settings.wireframeMode) {   // fill or line
         glPolygonMode( GL_FRONT_AND_BACK, GL_LINE );
     } else {
         glPolygonMode( GL_FRONT_AND_BACK, GL_FILL );
     }
 
-    if (settings.showControlMesh) {
+    if (settings.showControlMesh) { // control mesh drawing with 3 diff shapes
         if (settings.useDifferentColors){
             mr.draw();
             settings.uniformUpdateRequired = true;
@@ -130,10 +132,10 @@ void MainView::paintGL() {
     }
 
     if (settings.limitPosition) {
-        limr.draw();
+        limr.draw();    //limit position drawing
     }
 
-    if (settings.showSurfacePatch) {
+    if (settings.showSurfacePatch) { //limit position based surface drawing
         if (settings.useDifferentColors){
             tesColorr.draw();
         } else{
@@ -141,7 +143,7 @@ void MainView::paintGL() {
         }
     }
 
-    if (settings.showGregoryPatch) {
+    if (settings.showGregoryPatch) {    // Gregory patch surface drawing
         if (settings.useDifferentColors){
             gregColorQuadr.draw();
             settings.uniformGregUpdateRequired = true;
@@ -153,19 +155,19 @@ void MainView::paintGL() {
         }
     }
 
-    if (settings.showEdges && !settings.wireframeMode){
+    if (settings.showEdges && !settings.wireframeMode){ //edge drawing
         if(settings.showControlMesh){
             glPolygonMode( GL_FRONT_AND_BACK, GL_LINE );
             mr.drawEdges();
         }
 
-        if(settings.showSurfacePatch){
+        if(settings.showSurfacePatch){      //Tessellation with regular quad surfaces
             settings.uniformTesUpdateRequired = true;
             glPolygonMode( GL_FRONT_AND_BACK, GL_LINE );
             tesr.drawEdges();
         }
 
-        if(settings.showGregoryPatch){
+        if(settings.showGregoryPatch){      //Tessellation with irregular quad and triangle Gregory surfaces
             settings.uniformGregUpdateRequired = true;
             glPolygonMode( GL_FRONT_AND_BACK, GL_LINE );
             gregQuadr.drawEdges();

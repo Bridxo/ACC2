@@ -59,7 +59,7 @@ void MeshRendererTriangles::initBuffers() {
 
 void MeshRendererTriangles::updateBuffers(Mesh& currentMesh) {
 
-    qDebug() << ".. updateBuffers";
+//    qDebug() << ".. updateBuffers";
 
     //gather attributes for current mesh
     currentMesh.extractAttributes();
@@ -68,23 +68,23 @@ void MeshRendererTriangles::updateBuffers(Mesh& currentMesh) {
 
     QVector<unsigned int>& triangleIndices = currentMesh.getTriangleIndices();
 
-    qDebug() << "vertexCoords size" << vertexCoords.size();
-    qDebug() << "regularQuadIndices size" << triangleIndices.size();
+//    qDebug() << "vertexCoords size" << vertexCoords.size();
+//    qDebug() << "regularQuadIndices size" << triangleIndices.size();
 
     gl->glBindBuffer(GL_ARRAY_BUFFER, meshCoordsBO);
     gl->glBufferData(GL_ARRAY_BUFFER, sizeof(QVector3D)*vertexCoords.size(), vertexCoords.data(), GL_DYNAMIC_DRAW);
 
-    qDebug() << " → Updated meshCoordsBO";
+//    qDebug() << " → Updated meshCoordsBO";
 
     gl->glBindBuffer(GL_ARRAY_BUFFER, meshNormalsBO);
     gl->glBufferData(GL_ARRAY_BUFFER, sizeof(QVector3D)*vertexNormals.size(), vertexNormals.data(), GL_DYNAMIC_DRAW);
 
-    qDebug() << " → Updated meshNormalsBO";
+//    qDebug() << " → Updated meshNormalsBO";
 
     gl->glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, meshIndexBO);
     gl->glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(unsigned int)*triangleIndices.size(), triangleIndices.data(), GL_DYNAMIC_DRAW);
 
-    qDebug() << " → Updated meshIndexBO";
+//    qDebug() << " → Updated meshIndexBO";
 
     meshIBOSize = triangleIndices.size();
 }
@@ -97,7 +97,7 @@ void MeshRendererTriangles::updateUniforms() {
 }
 
 void MeshRendererTriangles::draw() {
-    qDebug() << "***draw triangles***";
+//    qDebug() << "***draw triangles***";
     shaderProg.bind();
 
     if (settings->uniformUpdateRequired) {

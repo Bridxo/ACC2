@@ -18,7 +18,7 @@ HalfEdge* vertOnBoundary(Vertex* currentVertex) {
 }
 
 void Mesh::computeSurfacePatches() {
-    qDebug() << "compute surface patches";
+//    qDebug() << "compute surface patches";
 
     // p3 p2  p7  p6
     // p0 p1  p4  p5
@@ -117,8 +117,8 @@ void Mesh::computeSurfacePatches() {
 //    qDebug() << "vertexSurfaceCoords size" << vertexSurfaceCoords.size();
 
 }
-void Mesh::computeSurfacePatches_v2() { // triangle, quad, but without boundaries
-    qDebug() << "compute gregory patches";
+void Mesh::computeSurfacePatches_v2() { // triangle, irregular quad, but without boundaries
+//    qDebug() << "compute gregory patches";
 
     unsigned int numFaces = faces.size();
     unsigned int k, currentFaceVal;
@@ -133,10 +133,10 @@ void Mesh::computeSurfacePatches_v2() { // triangle, quad, but without boundarie
     // p1  e1+ e2-  p2
 
     vertexGregoryQuadCoords.clear();
-    vertexGregoryQuadCoords.reserve(numFaces*20);
+    vertexGregoryQuadCoords.reserve(numFaces*20);   // 20 points for quads
 
     vertexGregoryTriCoords.clear();
-    vertexGregoryTriCoords.reserve(numFaces*15);
+    vertexGregoryTriCoords.reserve(numFaces*15);    // 15 points for triangles
 
 
     for (k=0; k<numFaces; k++) { // along with all faces
@@ -182,9 +182,7 @@ void Mesh::computeSurfacePatches_v2() { // triangle, quad, but without boundarie
                      //values needed to determine the limit position of non-boundary vertices
                      Vertex* currentVertex = startEdge->target;
 
-                     //FIXME: this turned out to be the primary fix!
-//                      taking the out of the vertex is not necesarilly going to be the halfedge that is part of this face!
-//                     HalfEdge* currentEdge = currentVertex->out;
+                     //From the start edge
                      HalfEdge* currentEdge = startEdge->next;
 
 
@@ -205,11 +203,11 @@ void Mesh::computeSurfacePatches_v2() { // triangle, quad, but without boundarie
 
                          m_coords = (currentVertex->coords + currentEdge->target->coords) / 2;
 
-                         unsigned int faceValency = currentEdge->polygon->val;
+                         unsigned int faceValency = currentEdge->polygon->val;  //get face val from current face
 
                          //qDebug() << "face index to determine c" <<  currentEdge->polygon->index;
 
-                         for (unsigned int j = 0; j < faceValency; j++){
+                         for (unsigned int j = 0; j < faceValency; j++){    // loop over the current face to find all M,C on each edges
                              c_coords += edgeInFace->target->coords;
 
                              edgeInFace = edgeInFace->next;
@@ -273,7 +271,6 @@ void Mesh::computeSurfacePatches_v2() { // triangle, quad, but without boundarie
 
             for(int f_ind = 0 ; f_ind < currentFaceVal ; f_ind++){
                 //currentVertex_ind change
-                //Vertex* currentVertex = currentEdge->target;
                 int currentVertex_ind = currentEdge->target->index;
                 //qDebug() << "currentVertex at index" << currentVertex_ind;
                 //calculate c0, c1
@@ -290,8 +287,6 @@ void Mesh::computeSurfacePatches_v2() { // triangle, quad, but without boundarie
                 int e0_plus_ind = 2*f_ind;
                 int e0_minus_ind = 2*f_ind+1;
                 int e1_minus_ind = 2*( (f_ind+1) % currentFaceVal) + 1;
-                //FIXME: this turned out to be +3!
-//                int e3_plus_ind  = 2*( (f_ind+2) % currentFaceVal);
                 int e3_plus_ind  = 2*( (f_ind+3) % currentFaceVal);
 
                 /*qDebug() << "e0_plus at index" << e0_plus_ind << "is" << e[e0_plus_ind];
@@ -416,19 +411,12 @@ QVector<QVector3D> Mesh:: cal_q(int val, QVector<QVector3D> m, QVector<QVector3D
         //qDebug() << "m[i]" << m[i];
         //qDebug() << "c[i]" << c[i];
         //qDebug() << "q" << q;
-        q[0] = q[0] + ((( 1.0- theta * cos(M_PI / float(val))) * cos(2.0*float(i)*M_PI / float(val))* m[i])
+        q[0] = q[0] + ((( 1.0- theta * cos(M_PI / float(val))) * cos(2.0*float(i)*M_PI / float(val))* m[i]) //q +
               + (2.0 * theta * cos( (2.0*float(i)*M_PI + M_PI)/float(val)) * c[i]));
 
-        //int q_mod = (i+1) % val; // next neighbor edge (e-)
-
-        //FIXME: I fixed this to point to the next edge and not to the previous edge!
-//        int q_mod = (i + val - 1) % val; // next neighbor edge (e-)
         int q_mod = (i + val + 1) % val; // next neighbor edge (e-)
 
         //qDebug() << "q_mod" <<q_mod;
-
-        //q[1] = q[1] + (((1.0- theta * cos(M_PI/float(val)))*cos(2.0*float(q_mod)*M_PI/float(val))* m[i])    // q -
-        //              + (2.0 * theta * cos( (2.0*float(q_mod)*M_PI + M_PI)/float(val)) * c[i]));
 
         q[1] = q[1] + (((1.0- theta * cos(M_PI/float(val)))*cos(2.0*float(i)*M_PI/float(val))* m[q_mod])    // q -
                       + (2.0 * theta * cos( (2.0*float(i)*M_PI + M_PI)/float(val)) * c[q_mod]));
@@ -446,7 +434,6 @@ QVector<QVector3D> Mesh:: cal_r(QVector<QVector3D> m, QVector<QVector3D> c) // c
     r.reserve(2);
     r.append ( (1.0/3.0 * (m[1] - m.last())) + (2.0/3.0 * (c[0] - c.last())));    // r +
     r.append ( (1.0/3.0 * (m[0] - m[2])) + (2.0/3.0 * (c[0] - c[1])));            // r - into patch
-    //r.append ( (1.0/3.0 * (m[2] - m[0])) + (2.0/3.0 * (c[1] - c[0])));
     return r;
 }
 
@@ -496,7 +483,6 @@ QVector3D Mesh::computeLimitPosition(Vertex* currentVertex) { // corner
 
             sum_m_c = sum_m_c + m + c;
 
-            //currentEdge = currentEdge->twin->next;
             currentEdge = currentEdge->prev->twin;
         }
 
@@ -525,7 +511,7 @@ void Mesh::subdivideCatmullClark(Mesh& mesh) {
     unsigned short n;
     HalfEdge* currentEdge;
 
-    qDebug() << ":: Creating new Catmull-Clark mesh";
+//    qDebug() << ":: Creating new Catmull-Clark mesh";
 
     numVerts = vertices.size();
     numHalfEdges = halfEdges.size();
@@ -552,7 +538,7 @@ void Mesh::subdivideCatmullClark(Mesh& mesh) {
                                    k) );
     }
 
-    qDebug() << " * Created face points";
+//    qDebug() << " * Created face points";
 
     vIndex = numFaces;
 
@@ -660,17 +646,17 @@ void Mesh::subdivideCatmullClark(Mesh& mesh) {
 
     }
 
-    qDebug() << " * Created faces and remaining halfedges";
+//    qDebug() << " * Created faces and remaining halfedges";
 
     // For vertex points
     for (k=0; k<numVerts; k++) {
         newVertices[numFaces + k].out = &newHalfEdges[ 2*vertices[k].out->index ];
     }
 
-    qDebug() << " * Completed!";
-    qDebug() << "   # Vertices:" << newVertices.size();
-    qDebug() << "   # HalfEdges:" << newHalfEdges.size();
-    qDebug() << "   # Faces:" << newFaces.size();
+//    qDebug() << " * Completed!";
+//    qDebug() << "   # Vertices:" << newVertices.size();
+//    qDebug() << "   # HalfEdges:" << newHalfEdges.size();
+//    qDebug() << "   # Faces:" << newFaces.size();
 
 }
 
