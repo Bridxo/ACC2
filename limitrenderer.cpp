@@ -75,17 +75,17 @@ void LimitRenderer::updateBuffers(Mesh& currentMesh) {
     gl->glBindBuffer(GL_ARRAY_BUFFER, meshCoordsBO);
     gl->glBufferData(GL_ARRAY_BUFFER, sizeof(QVector3D)*vertexLimitCoords.size(), vertexLimitCoords.data(), GL_DYNAMIC_DRAW);
 
-//    qDebug() << " → Updated meshLimitCoordsBO";
+    qDebug() << " → Updated meshLimitCoordsBO";
 
     gl->glBindBuffer(GL_ARRAY_BUFFER, meshNormalsBO);
     gl->glBufferData(GL_ARRAY_BUFFER, sizeof(QVector3D)*vertexLimitNormals.size(), vertexLimitNormals.data(), GL_DYNAMIC_DRAW);
 
-//    qDebug() << " → Updated meshLimitNormalsBO";
+    qDebug() << " → Updated meshLimitNormalsBO";
 
     gl->glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, meshIndexBO);
     gl->glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(unsigned int)*polyIndices.size(), polyIndices.data(), GL_DYNAMIC_DRAW);
 
-//    qDebug() << " → Updated meshIndexBO";
+    qDebug() << " → Updated meshIndexBO for limit position";
 
     meshIBOSize = polyIndices.size();
 }

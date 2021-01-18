@@ -2,12 +2,12 @@
 #include "ui_mainwindow.h"
 
 MainWindow::MainWindow(QWidget *parent) :  QMainWindow(parent), ui(new Ui::MainWindow) {
-//  qDebug() << "✓✓ MainWindow constructor";
+  qDebug() << "✓✓ MainWindow constructor";
   ui->setupUi(this);
 }
 
 MainWindow::~MainWindow() {
-//  qDebug() << "✗✗ MainWindow destructor";
+  qDebug() << "✗✗ MainWindow destructor";
   delete ui;
 }
 
@@ -80,7 +80,7 @@ void MainWindow::on_LimitPos_toggled(bool checked){ //Limit position on/off
     ui->MainDisplay->update();
 }
 
-void MainWindow::on_SurfacePatch_toggled(bool checked){ //Limit position with cubic B-spline patch on/off == Regular quads
+void MainWindow::on_SurfacePatch_toggled(bool checked){ //Limit surface with bicubic B-spline patch on/off == Regular quads
     ui->MainDisplay->settings.showSurfacePatch = checked;
     ui->MainDisplay->settings.uniformTesUpdateRequired = true;
     if(ui->MainDisplay->settings.update_CC){ //update CC subdivision on ACC2
@@ -101,7 +101,7 @@ void MainWindow::on_RenderMesh_toggled(bool checked){ //CC Mesh on/off
 }
 
 
-void MainWindow::on_GregoryPatch_toggled(bool checked) //Gregory patch on/off
+void MainWindow::on_GregoryPatch_toggled(bool checked) //Approximated surface using Gregory patches on/off
 {
     ui->MainDisplay->settings.showGregoryPatch = checked;
     ui->MainDisplay->settings.uniformGregUpdateRequired = true;
@@ -143,7 +143,7 @@ void MainWindow::on_Tess_level_valueChanged(int value) //Tessellation level slid
     ui->MainDisplay->update();
 }
 
-void MainWindow::on_checkBox_toggled(bool checked) //Subdivision following checkbox (checked = follow CC Mesh level / unchecked = follow CC Mesh level before toggle this box)
+void MainWindow::on_checkBox_toggled(bool checked) //Subdivision following checkbox (checked = follow CC Mesh level / unchecked = follow CC Mesh level before this box was toggled)
 {
     ui->MainDisplay->settings.update_CC = checked;
     if(ui->MainDisplay->settings.update_CC){ //update CC subdivision on ACC2

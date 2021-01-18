@@ -5,7 +5,7 @@ TessellationRenderer::TessellationRenderer()
     meshIBOSize = 0;
 }
 
-TessellationRenderer::~TessellationRenderer() {
+TessellationRenderer::~TessellationRenderer() { // regular quads
     gl->glDeleteVertexArrays(1, &vao);
 
     gl->glDeleteBuffers(1, &meshCoordsBO);
@@ -89,6 +89,8 @@ void TessellationRenderer::updateBuffers(Mesh& currentMesh) {
 
     gl->glBindBuffer(GL_ARRAY_BUFFER, meshCoordsBO);
     gl->glBufferData(GL_ARRAY_BUFFER, sizeof(QVector3D)*vertexSurfaceCoords.size(), vertexSurfaceCoords.data(), GL_DYNAMIC_DRAW);
+
+    qDebug() << " → Updated meshCoordsBO for regular quad tessellation";
 
     meshIBOSize = vertexSurfaceCoords.size();
 }

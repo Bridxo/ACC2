@@ -5,7 +5,7 @@ MeshRendererRegularQuads::MeshRendererRegularQuads()
     meshIBOSize = 0;
 }
 
-MeshRendererRegularQuads::~MeshRendererRegularQuads() {
+MeshRendererRegularQuads::~MeshRendererRegularQuads() { //regular quads in mesh
     gl->glDeleteVertexArrays(1, &vao);
 
     gl->glDeleteBuffers(1, &meshCoordsBO);
@@ -67,9 +67,6 @@ void MeshRendererRegularQuads::updateBuffers(Mesh& currentMesh) {
     QVector<QVector3D>& vertexNormals = currentMesh.getVertexNorms();
 
     QVector<unsigned int>& regularQuadIndices = currentMesh.getRegularQuadIndices();
-
-//    qDebug() << "vertexCoords size" << vertexCoords.size();
-//    qDebug() << "regularQuadIndices size" << regularQuadIndices.size();
 
     gl->glBindBuffer(GL_ARRAY_BUFFER, meshCoordsBO);
     gl->glBufferData(GL_ARRAY_BUFFER, sizeof(QVector3D)*vertexCoords.size(), vertexCoords.data(), GL_DYNAMIC_DRAW);

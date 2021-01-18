@@ -5,7 +5,7 @@ MeshRendererTriangles::MeshRendererTriangles()
     meshIBOSize = 0;
 }
 
-MeshRendererTriangles::~MeshRendererTriangles() {
+MeshRendererTriangles::~MeshRendererTriangles() { // triangles in mesh
     gl->glDeleteVertexArrays(1, &vao);
 
     gl->glDeleteBuffers(1, &meshCoordsBO);

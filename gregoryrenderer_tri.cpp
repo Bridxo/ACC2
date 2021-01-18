@@ -75,18 +75,16 @@ void GregoryRendererTriangle::initBuffers() {
 
 void GregoryRendererTriangle::updateBuffers(Mesh& currentMesh) {
 
-//    qDebug() << ".. updateBuffers";
+    //qDebug() << ".. updateBuffers for Gregory Triangles";
 
     //gather attributes for current mesh
     currentMesh.extractAttributes();
     QVector<QVector3D>& vertexGregoryTriCoords = currentMesh.getVertexGregoryTriCoords();
 
-//    qDebug() << "controlPointIndices size" << controlPointIndices.size();
-
     gl->glBindBuffer(GL_ARRAY_BUFFER, meshCoordsBO);
     gl->glBufferData(GL_ARRAY_BUFFER, sizeof(QVector3D)*vertexGregoryTriCoords.size(), vertexGregoryTriCoords.data(), GL_DYNAMIC_DRAW);
 
-//    qDebug() << " → Updated meshCoordsBO for tessellation";
+    qDebug() << " → Updated meshCoordsBO for Gregory triangle tessellation";
 
     meshIBOSize = vertexGregoryTriCoords.size();
 }

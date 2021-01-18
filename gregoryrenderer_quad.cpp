@@ -75,20 +75,20 @@ void GregoryRendererQuad::initBuffers() {
 
 void GregoryRendererQuad::updateBuffers(Mesh& currentMesh) {
 
-//    qDebug() << ".. updateBuffers";
+    //qDebug() << ".. updateBuffers for Gregory quads";
 
     //gather attributes for current mesh
     currentMesh.extractAttributes();
     QVector<QVector3D>& vertexGregoryQuadCoords = currentMesh.getVertexGregoryQuadCoords();
     meshIBOSize = vertexGregoryQuadCoords.size();
 
-//    qDebug() << "meshIBOSize for Gregory Quads" << meshIBOSize;
+    //qDebug() << "meshIBOSize for Gregory Quads" << meshIBOSize;
 
 
     gl->glBindBuffer(GL_ARRAY_BUFFER, meshCoordsBO);
     gl->glBufferData(GL_ARRAY_BUFFER, sizeof(QVector3D)*vertexGregoryQuadCoords.size(), vertexGregoryQuadCoords.data(), GL_DYNAMIC_DRAW);
 
-//    qDebug() << " → Updated meshCoordsBO for Gregory quad tessellation";
+    qDebug() << " → Updated meshCoordsBO for Gregory quad tessellation";
 
 }
 

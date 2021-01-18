@@ -21,7 +21,7 @@ void MeshRendererIrregularQuads::init(QOpenGLFunctions_4_1_Core* f, Settings* s)
     initBuffers();
 }
 
-void MeshRendererIrregularQuads::initShaders() {
+void MeshRendererIrregularQuads::initShaders() { //irregular quads in mesh
     shaderProg.create();
     shaderProg.addShaderFromSourceFile(QOpenGLShader::Vertex, ":/shaders/vertshader.glsl");
     shaderProg.addShaderFromSourceFile(QOpenGLShader::Fragment, ":/shaders/fragshader_irregular_quads.glsl");
@@ -67,9 +67,6 @@ void MeshRendererIrregularQuads::updateBuffers(Mesh& currentMesh) {
     QVector<QVector3D>& vertexNormals = currentMesh.getVertexNorms();
 
     QVector<unsigned int>& irregularQuadIndices = currentMesh.getIrregularQuadIndices();
-
-//    qDebug() << "vertexCoords size" << vertexCoords.size();
-//    qDebug() << "regularQuadIndices size" << irregularQuadIndices.size();
 
     gl->glBindBuffer(GL_ARRAY_BUFFER, meshCoordsBO);
     gl->glBufferData(GL_ARRAY_BUFFER, sizeof(QVector3D)*vertexCoords.size(), vertexCoords.data(), GL_DYNAMIC_DRAW);

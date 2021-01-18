@@ -21,7 +21,7 @@ void MeshRenderer::init(QOpenGLFunctions_4_1_Core* f, Settings* s) {
     initBuffers();
 }
 
-void MeshRenderer::initShaders() {
+void MeshRenderer::initShaders() { //for entire mesh
     shaderProg.create();
     shaderProg.addShaderFromSourceFile(QOpenGLShader::Vertex, ":/shaders/vertshader.glsl");
     shaderProg.addShaderFromSourceFile(QOpenGLShader::Fragment, ":/shaders/fragshader.glsl");
@@ -80,17 +80,17 @@ void MeshRenderer::updateBuffers(Mesh& currentMesh) {
     gl->glBindBuffer(GL_ARRAY_BUFFER, meshCoordsBO);
     gl->glBufferData(GL_ARRAY_BUFFER, sizeof(QVector3D)*vertexCoords.size(), vertexCoords.data(), GL_DYNAMIC_DRAW);
 
-//    qDebug() << " → Updated meshCoordsBO";
+    qDebug() << " → Updated meshCoordsBO";
 
     gl->glBindBuffer(GL_ARRAY_BUFFER, meshNormalsBO);
     gl->glBufferData(GL_ARRAY_BUFFER, sizeof(QVector3D)*vertexNormals.size(), vertexNormals.data(), GL_DYNAMIC_DRAW);
 
-//    qDebug() << " → Updated meshNormalsBO";
+    qDebug() << " → Updated meshNormalsBO";
 
     gl->glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, meshIndexBO);
     gl->glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(unsigned int)*polyIndices.size(), polyIndices.data(), GL_DYNAMIC_DRAW);
 
-//    qDebug() << " → Updated meshIndexBO";
+    qDebug() << " → Updated meshIndexBO";
 
     meshIBOSize = polyIndices.size();
 }

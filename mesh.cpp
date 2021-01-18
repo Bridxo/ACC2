@@ -2,7 +2,7 @@
 #include "math.h"
 
 Mesh::Mesh() {
-//    qDebug() << "✓✓ Mesh constructor (Empty)";
+    qDebug() << "✓✓ Mesh constructor (Empty)";
 }
 
 Mesh::Mesh(OBJFile* loadedOBJFile) {
@@ -111,7 +111,7 @@ Mesh::Mesh(OBJFile* loadedOBJFile) {
 }
 
 Mesh::~Mesh() {
-//    qDebug() << "✗✗ Mesh destructor";
+    qDebug() << "✗✗ Mesh destructor";
 
 //    qDebug() << "   # Vertices:" << vertices.size();
 //    qDebug() << "   # HalfEdges:" << halfEdges.size();
@@ -171,14 +171,11 @@ void Mesh::extractAttributes() {
      // extract and assign limit position coordinates for all vertices
     for (int k = 0; k < vertices.size(); k++) {
         vertexLimitCoords.append( computeLimitPosition(&vertices[k]) );
-        //vertexGregoryCoords.append( computeLimitPosition(&vertices[k]) );
-        //qDebug() << "append limit coords" << computeLimitPosition(&vertices[k]);
     }
 
     // extract normals for vertex limit positions
     for (int k = 0; k < vertices.size(); k++) {
         vertexLimitNormals.append( computeVertexLimitNormal(&vertices[k]) );
-        //vertexGregoryNormals.append( computeVertexLimitNormal(&vertices[k]) );
     }
 
     polyIndices.clear();
@@ -247,14 +244,6 @@ void Mesh::extractAttributes() {
 //        qDebug() << "***Mesh contains regular guads***";
 
 //    } else qDebug() << "***There are no regular guads in the mesh***";
-
-    /*for (unsigned int k=0; k<polyIndices.size();k++){
-        qDebug() << "polyIndex is" << polyIndices[k];
-    }*/
-
-    /*for (unsigned int k=0; k<controlPointIndices.size();k++){
-        qDebug() << "controlPointIndex is" << controlPointIndices[k];
-    }*/
 
 }
 
