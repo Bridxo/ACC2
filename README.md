@@ -7,7 +7,7 @@ Date: 18-01-2021
 ## Table of contents
 * [Description](#description)
 * [Extra Functionality](#extra-functionality)
-* [Code] (#code)
+* [Code](#code)
 * [Supplemental materials](#supplemental-materials)
 
 
