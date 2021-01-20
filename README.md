@@ -1,6 +1,6 @@
 # ACC2
-Kayleigh Boekhoudt(s3447707) and Heejun Lee (p301521)
-Final project: ACC2
+Kayleigh Boekhoudt(s3447707) and Heejun Lee (p301521)\
+Final project: ACC2\
 Date: 18-01-2021
 
 
