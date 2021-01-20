@@ -10,5 +10,6 @@ It is also possible to visually distinct between the shapes using "Quads and Tri
 
 Extra functionality:
 To compare the ACC2 approximation to the Catmull-Clark surface, the user can display both the Catmull-Clark surface and the ACC2 surfaces. An example setting is provide in the screenshots folder.
+Supplementary materials (video) added in the Supplementary_materials folder
 
 We have also provided a mesh called quad_tri.obj that only consists of irregular quads and triangles that we used to test our implementation.
