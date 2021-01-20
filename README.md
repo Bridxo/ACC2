@@ -28,7 +28,7 @@ We have also provided a mesh called quad_tri.obj that only consists of irregular
 ## Code
 Code is written in C++. To get the code running please run ACC2.pro and include the following:\
 a. [Qt5](https://www.qt.io/)\
-b. [OpenGL](https://www.opengl.org//)\
+b. [OpenGL](https://www.opengl.org//)
 
 
 ## Supplemental materials
