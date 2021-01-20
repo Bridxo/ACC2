@@ -50,9 +50,12 @@ void MainView::initializeGL() {
     irregularQuadmr.init(functions, &settings);
     trianglemr.init(functions, &settings);
     limr.init(functions, &settings);
-    tesr.init(functions, &settings);
-    gregQuadr.init(functions, &settings);
-    gregTrir.init(functions, &settings);
+    tesr.init(functions, &settings, false);
+    tesColorr.init(functions, &settings, true);
+    gregQuadr.init(functions, &settings, false);
+    gregColorQuadr.init(functions, &settings, true);
+    gregTrir.init(functions, &settings, false);
+    gregColorTrir.init(functions, &settings, true);
 
     updateMatrices();
 }
@@ -87,6 +90,7 @@ void MainView::updateMatrices() {
 }
 
 void MainView::updateBuffers(Mesh &currentMesh) {
+    // update renderers here with the current mesh
     mr.updateBuffers(currentMesh);
     regularQuadmr.updateBuffers(currentMesh);
     irregularQuadmr.updateBuffers(currentMesh);
@@ -95,9 +99,13 @@ void MainView::updateBuffers(Mesh &currentMesh) {
     update();
 }
 void MainView::updateBuffers_2(Mesh &currentMesh) {
+    // update renderers here with the current mesh_mainly on the Gregory patches
     gregQuadr.updateBuffers(currentMesh);
+    gregColorQuadr.updateBuffers(currentMesh);
     gregTrir.updateBuffers(currentMesh);
+    gregColorTrir.updateBuffers(currentMesh);
     tesr.updateBuffers(currentMesh);
+    tesColorr.updateBuffers(currentMesh);
     update();
 }
 
@@ -105,56 +113,68 @@ void MainView::paintGL() {
     glClearColor(0.0, 0.0, 0.0, 1.0);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-    if (settings.wireframeMode) {
+    if (settings.wireframeMode) {   // fill or line
         glPolygonMode( GL_FRONT_AND_BACK, GL_LINE );
     } else {
         glPolygonMode( GL_FRONT_AND_BACK, GL_FILL );
     }
 
-
-   /* if (settings.modelLoaded) {
-        mr.draw();
-    }*/
-
     if (settings.showControlMesh) {
-        if (settings.useDifferentColors){
+        if (settings.useDifferentColors){// control mesh drawing with 3 diff shapes
+            mr.draw();
+            settings.uniformUpdateRequired = true;
             regularQuadmr.draw();
             irregularQuadmr.draw();
             trianglemr.draw();
         } else{
             mr.draw();
         }
-
-        if (settings.showEdges && !settings.wireframeMode){
-            glPolygonMode( GL_FRONT_AND_BACK, GL_LINE );
-            mr.drawEdges();
-        }
     }
 
     if (settings.limitPosition) {
-        limr.draw();
+        limr.draw();    //limit position drawing
     }
 
-    if (settings.showSurfacePatch) {
+    if (settings.showSurfacePatch) { //regular quads surface drawing
         if (settings.useDifferentColors){
-            //triangletesr.draw();
+            tesColorr.draw();
         } else{
             tesr.draw();
         }
+    }
 
-        /*if (settings.showEdges && !settings.wireframeMode){
+    if (settings.showGregoryPatch) {    // Gregory patch surface drawing
+        if (settings.useDifferentColors){
+            gregColorQuadr.draw();
+            settings.uniformGregUpdateRequired = true;
+            gregColorTrir.draw();
+        } else{
+            gregQuadr.draw();
+            settings.uniformGregUpdateRequired = true;
+            gregTrir.draw();
+        }
+    }
+
+    if (settings.showEdges && !settings.wireframeMode){ //edge drawing
+        if(settings.showControlMesh){       //mesh
+            glPolygonMode( GL_FRONT_AND_BACK, GL_LINE );
+            mr.drawEdges();
+        }
+
+        if(settings.showSurfacePatch){      //regular quads
+            settings.uniformTesUpdateRequired = true;
             glPolygonMode( GL_FRONT_AND_BACK, GL_LINE );
             tesr.drawEdges();
-        }*/
+        }
 
+        if(settings.showGregoryPatch){      //irregular quads and triangles
+            settings.uniformGregUpdateRequired = true;
+            glPolygonMode( GL_FRONT_AND_BACK, GL_LINE );
+            gregQuadr.drawEdges();
+            settings.uniformGregUpdateRequired = true;
+            gregTrir.drawEdges();
+        }
     }
-
-    if (settings.showGregoryPatch) {
-        gregQuadr.draw();
-        settings.uniformGregUpdateRequired = true;
-        gregTrir.draw();
-    }
-
 }
 
 QVector2D MainView::toNormalizedScreenCoordinates(int x, int y) {

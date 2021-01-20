@@ -7,7 +7,7 @@ Mesh::Mesh() {
 
 Mesh::Mesh(OBJFile* loadedOBJFile) {
 
-    qDebug() << "✓✓ Mesh constructor (OBJ)";
+//    qDebug() << "✓✓ Mesh constructor (OBJ)";
 
     // Convert loaded OBJ file to HalfEdge mesh
     unsigned int numVertices, numHalfEdges, numFaces;
@@ -39,7 +39,7 @@ Mesh::Mesh(OBJFile* loadedOBJFile) {
         // Out and valence are unknown at this point.
     }
 
-    qDebug() << "   # Vertices" << vertices.capacity() << vertices.size();
+//    qDebug() << "   # Vertices" << vertices.capacity() << vertices.size();
 
     unsigned int indexH = 0;
     unsigned int currentIndex = 0;
@@ -88,8 +88,8 @@ Mesh::Mesh(OBJFile* loadedOBJFile) {
         currentIndex += loadedOBJFile->faceValences[m];
     }
 
-    qDebug() << "   # Faces" << faces.capacity() << faces.size();
-    qDebug() << "   # HalfEdges" << halfEdges.capacity() << halfEdges.size();
+//    qDebug() << "   # Faces" << faces.capacity() << faces.size();
+//    qDebug() << "   # HalfEdges" << halfEdges.capacity() << halfEdges.size();
 
     // Outs and Valences of vertices
     for (k = 0; k < vertices.size(); k++) {
@@ -106,16 +106,16 @@ Mesh::Mesh(OBJFile* loadedOBJFile) {
     setTwins(numHalfEdges, indexH, potentialTwins);
 
 
-    qDebug() << "   # Updated HalfEdges" << halfEdges.capacity() << halfEdges.size();
+//    qDebug() << "   # Updated HalfEdges" << halfEdges.capacity() << halfEdges.size();
 
 }
 
 Mesh::~Mesh() {
     qDebug() << "✗✗ Mesh destructor";
 
-    qDebug() << "   # Vertices:" << vertices.size();
-    qDebug() << "   # HalfEdges:" << halfEdges.size();
-    qDebug() << "   # Faces:" << faces.size();
+//    qDebug() << "   # Vertices:" << vertices.size();
+//    qDebug() << "   # HalfEdges:" << halfEdges.size();
+//    qDebug() << "   # Faces:" << faces.size();
 
     vertices.clear();
     vertices.squeeze();
@@ -171,14 +171,11 @@ void Mesh::extractAttributes() {
      // extract and assign limit position coordinates for all vertices
     for (int k = 0; k < vertices.size(); k++) {
         vertexLimitCoords.append( computeLimitPosition(&vertices[k]) );
-        //vertexGregoryCoords.append( computeLimitPosition(&vertices[k]) );
-        //qDebug() << "append limit coords" << computeLimitPosition(&vertices[k]);
     }
 
     // extract normals for vertex limit positions
     for (int k = 0; k < vertices.size(); k++) {
         vertexLimitNormals.append( computeVertexLimitNormal(&vertices[k]) );
-        //vertexGregoryNormals.append( computeVertexLimitNormal(&vertices[k]) );
     }
 
     polyIndices.clear();
@@ -243,18 +240,10 @@ void Mesh::extractAttributes() {
     // compute Gregory patches
     computeSurfacePatches_v2();
 
-    if (controlPointIndices.size() != 0){
-        qDebug() << "***Mesh contains regular guads***";
+//    if (controlPointIndices.size() != 0){
+//        qDebug() << "***Mesh contains regular guads***";
 
-    } else qDebug() << "***There are no regular guads in the mesh***";
-
-    /*for (unsigned int k=0; k<polyIndices.size();k++){
-        qDebug() << "polyIndex is" << polyIndices[k];
-    }*/
-
-    /*for (unsigned int k=0; k<controlPointIndices.size();k++){
-        qDebug() << "controlPointIndex is" << controlPointIndices[k];
-    }*/
+//    } else qDebug() << "***There are no regular guads in the mesh***";
 
 }
 
@@ -287,7 +276,7 @@ void Mesh::setTwins(unsigned int numHalfEdges, unsigned int indexH, QVector<QVec
 
 
     if (twinless.size() > 0) {
-        qDebug() << " * There are" << twinless.size() << "HalfEdges without Twin (i.e. the model contains boundaries)";
+//        qDebug() << " * There are" << twinless.size() << "HalfEdges without Twin (i.e. the model contains boundaries)";
         // The mesh is not closed
 
         //qDebug() << Twinless.values();
@@ -298,7 +287,7 @@ void Mesh::setTwins(unsigned int numHalfEdges, unsigned int indexH, QVector<QVec
 
         while (twinless.size() > 0) {
             // Select a HalfEdge without Twin. The Twin that we will create is part of a boundary edge loop
-            qDebug() << " → Processing new Boundary Edge Loop";
+//            qDebug() << " → Processing new Boundary Edge Loop";
 
             initialEdge = &halfEdges[*twinless.begin()];
             twinless.remove(initialEdge->index);

@@ -22,7 +22,7 @@ void LimitRenderer::init(QOpenGLFunctions_4_1_Core* f, Settings* s) {
 }
 
 void LimitRenderer::initShaders() {
-
+    //limit position renderer with vertex -> fragment shaders
     limitShaderProg.create();
     limitShaderProg.addShaderFromSourceFile(QOpenGLShader::Vertex, ":/shaders/vertshader_limit.glsl");
     limitShaderProg.addShaderFromSourceFile(QOpenGLShader::Fragment, ":/shaders/fragshader_limit.glsl");
@@ -61,7 +61,7 @@ void LimitRenderer::initBuffers() {
 
 void LimitRenderer::updateBuffers(Mesh& currentMesh) {
 
-    qDebug() << ".. updateBuffers";
+//    qDebug() << ".. updateBuffers";
 
     //gather attributes for current mesh
     currentMesh.extractAttributes();
@@ -70,7 +70,7 @@ void LimitRenderer::updateBuffers(Mesh& currentMesh) {
 
     QVector<unsigned int>& polyIndices = currentMesh.getPolyIndices();
 
-    qDebug() << "polyIndices size" << polyIndices.size();
+//    qDebug() << "polyIndices size" << polyIndices.size();
 
     gl->glBindBuffer(GL_ARRAY_BUFFER, meshCoordsBO);
     gl->glBufferData(GL_ARRAY_BUFFER, sizeof(QVector3D)*vertexLimitCoords.size(), vertexLimitCoords.data(), GL_DYNAMIC_DRAW);
@@ -85,7 +85,7 @@ void LimitRenderer::updateBuffers(Mesh& currentMesh) {
     gl->glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, meshIndexBO);
     gl->glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(unsigned int)*polyIndices.size(), polyIndices.data(), GL_DYNAMIC_DRAW);
 
-    qDebug() << " → Updated meshIndexBO";
+    qDebug() << " → Updated meshIndexBO for limit position";
 
     meshIBOSize = polyIndices.size();
 }
@@ -98,7 +98,7 @@ void LimitRenderer::updateUniforms() {
 }
 
 void LimitRenderer::draw() {
-    //qDebug() << "***draw limit positions***";
+//    qDebug() << "***draw limit positions***";
 
     limitShaderProg.bind();
 

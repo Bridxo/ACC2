@@ -12,22 +12,23 @@ public:
     TessellationRenderer();
     ~TessellationRenderer();
 
-    void init(QOpenGLFunctions_4_1_Core* f, Settings* s);
+    void init(QOpenGLFunctions_4_1_Core* f, Settings* s, bool colors);
 
-    void initShaders();
+    void initShaders(bool colors);
     void initBuffers();
 
     void updateUniforms();
 
     void updateBuffers(Mesh& m);
     void draw();
+    void drawEdges();
 
 private:
 
     GLuint vao;
     GLuint meshCoordsBO, meshNormalsBO, meshIndexBO;
     unsigned int meshIBOSize;
-    QOpenGLShaderProgram shaderProg;
+    QOpenGLShaderProgram shaderProg, shaderEdgesProg;
 
     // Uniforms
     GLint uniModelViewMatrix, uniProjectionMatrix, uniNormalMatrix, uniInnerLevel, uniOuterLevel;

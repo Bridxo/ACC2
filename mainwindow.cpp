@@ -28,7 +28,7 @@ void MainWindow::importOBJ() {
 
 }
 
-void MainWindow::on_ImportOBJ_clicked() {
+void MainWindow::on_ImportOBJ_clicked() { //import obj file enable the window widgets
   importOBJ();
   ui->SubdivSteps->setEnabled(true);
   ui->SubdivSteps->setValue(0);
@@ -55,7 +55,7 @@ void MainWindow::on_ImportOBJ_clicked() {
   ui->checkBox->setChecked(false);
 }
 
-void MainWindow::on_SubdivSteps_valueChanged(int value) {
+void MainWindow::on_SubdivSteps_valueChanged(int value) { //CC Subdivision level change
     unsigned short k;
      ui->MainDisplay->settings.subdiv_value = value;
     for (k = meshes.size(); k < value+1; k++) {
@@ -64,88 +64,93 @@ void MainWindow::on_SubdivSteps_valueChanged(int value) {
     }
     ui->MainDisplay->updateBuffers( meshes[value] );
 
-    if(ui->MainDisplay->settings.update_CC){
+    if(ui->MainDisplay->settings.update_CC){ //update CC subdivision on ACC2
         ui->MainDisplay->updateBuffers_2( meshes[ ui->MainDisplay->settings.subdiv_value ] );
         ui->ACC2_S_count->display(ui->MainDisplay->settings.subdiv_value);
     }
-    else{
+    else{ // do not update CC subdivision on ACC2
         ui->MainDisplay->updateBuffers_2( meshes[ ui->MainDisplay->settings.subdiv_value_2 ] );
         ui->ACC2_S_count->display(ui->MainDisplay->settings.subdiv_value_2);
     }
 }
 
-void MainWindow::on_LimitPos_toggled(bool checked){
+void MainWindow::on_LimitPos_toggled(bool checked){ //Limit position on/off
     ui->MainDisplay->settings.limitPosition = checked;
     ui->MainDisplay->settings.uniformLimitUpdateRequired = true;
     ui->MainDisplay->update();
 }
 
-void MainWindow::on_SurfacePatch_toggled(bool checked){
+void MainWindow::on_SurfacePatch_toggled(bool checked){ //Limit surface with bicubic B-spline patch on/off == Regular quads
     ui->MainDisplay->settings.showSurfacePatch = checked;
     ui->MainDisplay->settings.uniformTesUpdateRequired = true;
-    if(ui->MainDisplay->settings.update_CC){
+    if(ui->MainDisplay->settings.update_CC){ //update CC subdivision on ACC2
         ui->MainDisplay->updateBuffers_2( meshes[ ui->MainDisplay->settings.subdiv_value ] );
         ui->ACC2_S_count->display(ui->MainDisplay->settings.subdiv_value);
     }
-    else{
+    else{ // do not update CC subdivision on ACC2
         ui->MainDisplay->updateBuffers_2( meshes[ ui->MainDisplay->settings.subdiv_value_2 ] );
         ui->ACC2_S_count->display(ui->MainDisplay->settings.subdiv_value_2);
     }
     ui->MainDisplay->update();
 }
 
-void MainWindow::on_RenderMesh_toggled(bool checked){
+void MainWindow::on_RenderMesh_toggled(bool checked){ //CC Mesh on/off
     ui->MainDisplay->settings.showControlMesh = checked;
     ui->MainDisplay->settings.uniformTesUpdateRequired = true;
     ui->MainDisplay->update();
 }
 
 
-void MainWindow::on_GregoryPatch_toggled(bool checked)
+void MainWindow::on_GregoryPatch_toggled(bool checked) //Approximated surface using Gregory patches on/off
 {
     ui->MainDisplay->settings.showGregoryPatch = checked;
     ui->MainDisplay->settings.uniformGregUpdateRequired = true;
-    if(ui->MainDisplay->settings.update_CC){
+    if(ui->MainDisplay->settings.update_CC){ //update CC subdivision on ACC2
         ui->MainDisplay->updateBuffers_2( meshes[ ui->MainDisplay->settings.subdiv_value ] );
         ui->ACC2_S_count->display(ui->MainDisplay->settings.subdiv_value);
     }
-    else{
+    else{ // do not update CC subdivision on ACC2
         ui->MainDisplay->updateBuffers_2( meshes[ ui->MainDisplay->settings.subdiv_value_2 ] );
         ui->ACC2_S_count->display(ui->MainDisplay->settings.subdiv_value_2);
     }
     ui->MainDisplay->update();
 }
 
-void MainWindow::on_DiffColors_toggled(bool checked)
+void MainWindow::on_DiffColors_toggled(bool checked) //Coloring based on shape on/off
 {
     ui->MainDisplay->settings.useDifferentColors = checked;
     ui->MainDisplay->settings.uniformUpdateRequired = true;
+    ui->MainDisplay->settings.uniformTesUpdateRequired = true;
+    ui->MainDisplay->settings.uniformGregUpdateRequired = true;
     ui->MainDisplay->update();
 }
 
-void MainWindow::on_Edges_toggled(bool checked)
+void MainWindow::on_Edges_toggled(bool checked) //Edge coloring (on the filled mesh) on/off
 {
     ui->MainDisplay->settings.showEdges = checked;
     ui->MainDisplay->settings.uniformEdgesUpdateRequired = true;
+    ui->MainDisplay->settings.uniformTesUpdateRequired = true;
+    ui->MainDisplay->settings.uniformGregUpdateRequired = true;
     ui->MainDisplay->update();
 }
 
-void MainWindow::on_Tess_level_valueChanged(int value)
+void MainWindow::on_Tess_level_valueChanged(int value) //Tessellation level slider (1-30) inner==outer level
 {
     ui->MainDisplay->settings.tess_level = value;
     ui->MainDisplay->settings.uniformGregUpdateRequired = true;
     ui->MainDisplay->settings.uniformTesUpdateRequired = true;
+    ui->MainDisplay->settings.uniformGregUpdateRequired = true;
     ui->MainDisplay->update();
 }
 
-void MainWindow::on_checkBox_toggled(bool checked) //
+void MainWindow::on_checkBox_toggled(bool checked) //Subdivision following checkbox (checked = follow CC Mesh level / unchecked = follow CC Mesh level before this box was toggled)
 {
     ui->MainDisplay->settings.update_CC = checked;
-    if(ui->MainDisplay->settings.update_CC){
+    if(ui->MainDisplay->settings.update_CC){ //update CC subdivision on ACC2
         ui->MainDisplay->updateBuffers_2( meshes[ ui->MainDisplay->settings.subdiv_value ] );
         ui->ACC2_S_count->display(ui->MainDisplay->settings.subdiv_value);
     }
-    else{
+    else{ // do not update CC subdivision on ACC2
         ui->MainDisplay->settings.subdiv_value_2 = ui->MainDisplay->settings.subdiv_value;
         ui->MainDisplay->updateBuffers_2( meshes[ ui->MainDisplay->settings.subdiv_value_2 ] );
         ui->ACC2_S_count->display(ui->MainDisplay->settings.subdiv_value_2);

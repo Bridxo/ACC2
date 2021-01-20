@@ -21,7 +21,7 @@ void MeshRenderer::init(QOpenGLFunctions_4_1_Core* f, Settings* s) {
     initBuffers();
 }
 
-void MeshRenderer::initShaders() {
+void MeshRenderer::initShaders() { //for entire mesh
     shaderProg.create();
     shaderProg.addShaderFromSourceFile(QOpenGLShader::Vertex, ":/shaders/vertshader.glsl");
     shaderProg.addShaderFromSourceFile(QOpenGLShader::Fragment, ":/shaders/fragshader.glsl");
@@ -65,7 +65,7 @@ void MeshRenderer::initBuffers() {
 
 void MeshRenderer::updateBuffers(Mesh& currentMesh) {
 
-    qDebug() << ".. updateBuffers";
+//    qDebug() << ".. updateBuffers";
 
     //gather attributes for current mesh
     currentMesh.extractAttributes();
@@ -74,8 +74,8 @@ void MeshRenderer::updateBuffers(Mesh& currentMesh) {
 
     QVector<unsigned int>& polyIndices = currentMesh.getPolyIndices();
 
-    qDebug() << "vertexCoords size" << vertexCoords.size();
-    qDebug() << "polyIndices size" << polyIndices.size();
+//    qDebug() << "vertexCoords size" << vertexCoords.size();
+//    qDebug() << "polyIndices size" << polyIndices.size();
 
     gl->glBindBuffer(GL_ARRAY_BUFFER, meshCoordsBO);
     gl->glBufferData(GL_ARRAY_BUFFER, sizeof(QVector3D)*vertexCoords.size(), vertexCoords.data(), GL_DYNAMIC_DRAW);
@@ -96,7 +96,7 @@ void MeshRenderer::updateBuffers(Mesh& currentMesh) {
 }
 
 void MeshRenderer::updateUniforms() {
-    //qDebug() << "###update uniforms in meshrenderer###";
+//    qDebug() << "###update uniforms in meshrenderer###";
     gl->glUniformMatrix4fv(uniModelViewMatrix, 1, false, settings->modelViewMatrix.data());
     gl->glUniformMatrix4fv(uniProjectionMatrix, 1, false, settings->projectionMatrix.data());
     gl->glUniformMatrix3fv(uniNormalMatrix, 1, false, settings->normalMatrix.data());

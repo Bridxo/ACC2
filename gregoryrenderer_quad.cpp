@@ -10,22 +10,27 @@ GregoryRendererQuad::~GregoryRendererQuad() {
     gl->glDeleteBuffers(1, &meshCoordsBO);
 }
 
-void GregoryRendererQuad::init(QOpenGLFunctions_4_1_Core* f, Settings* s) {
+void GregoryRendererQuad::init(QOpenGLFunctions_4_1_Core* f, Settings* s, bool colors) {
     gl = f;
     settings = s;
 
-    initShaders();
+    initShaders(colors);
     initBuffers();
 }
 
-void GregoryRendererQuad::initShaders() {
+void GregoryRendererQuad::initShaders(bool colors) {
     shaderProg.create();
 
-//    shaderProg.addShaderFromSourceFile(QOpenGLShader::Vertex, ":/shaders/vertshader.glsl");
+    //Gregory Quad vertex -> tessellation -> fragment shader loading
     shaderProg.addShaderFromSourceFile(QOpenGLShader::Vertex, ":/shaders/vertshader_surface.glsl");
     shaderProg.addShaderFromSourceFile(QOpenGLShader::TessellationControl, ":/shaders/tcs_quad.glsl");
     shaderProg.addShaderFromSourceFile(QOpenGLShader::TessellationEvaluation, ":/shaders/tes_quad.glsl");
-    shaderProg.addShaderFromSourceFile(QOpenGLShader::Fragment, ":/shaders/fragshader_greg_quad.glsl");
+
+    if (colors){ // if coloring mode on colors on quad
+        shaderProg.addShaderFromSourceFile(QOpenGLShader::Fragment, ":/shaders/fragshader_greg_quad.glsl");
+    } else {
+        shaderProg.addShaderFromSourceFile(QOpenGLShader::Fragment, ":/shaders/fragshader_acc2_surface.glsl");
+    }
 
     shaderProg.link();
 
@@ -35,6 +40,15 @@ void GregoryRendererQuad::initShaders() {
 
     uniInnerLevel = gl->glGetUniformLocation(shaderProg.programId(), "innerlevel");
     uniOuterLevel = gl->glGetUniformLocation(shaderProg.programId(), "outerlevel");
+
+    //Edge shaders
+    shaderEdgesProg.create();
+    shaderEdgesProg.addShaderFromSourceFile(QOpenGLShader::Vertex, ":/shaders/vertshader_surface.glsl");
+    shaderEdgesProg.addShaderFromSourceFile(QOpenGLShader::TessellationControl, ":/shaders/tcs_quad.glsl");
+    shaderEdgesProg.addShaderFromSourceFile(QOpenGLShader::TessellationEvaluation, ":/shaders/tes_quad.glsl");
+    shaderEdgesProg.addShaderFromSourceFile(QOpenGLShader::Fragment, ":/shaders/fragshaderEdges.glsl");
+
+    shaderEdgesProg.link();
 
 }
 
@@ -61,42 +75,20 @@ void GregoryRendererQuad::initBuffers() {
 
 void GregoryRendererQuad::updateBuffers(Mesh& currentMesh) {
 
-    qDebug() << ".. updateBuffers";
+    //qDebug() << ".. updateBuffers for Gregory quads";
 
     //gather attributes for current mesh
     currentMesh.extractAttributes();
     QVector<QVector3D>& vertexGregoryQuadCoords = currentMesh.getVertexGregoryQuadCoords();
     meshIBOSize = vertexGregoryQuadCoords.size();
-    qDebug() << "meshIBOSize for Gregory Quads" << meshIBOSize;
 
-    QVector<QVector3D> vertexGregoryQuadCoords_test;
+    //qDebug() << "meshIBOSize for Gregory Quads" << meshIBOSize;
 
-
-    //for (int i=0;i<meshIBOSize/20;i++){
-    for (int i=0;i<1;i++){ //only first irregular quad
-
-        qDebug() << "i" <<i;
-        for (int j=12;j<20;j++){
-        //for (int j=0;j<13;j++){//corner and edge points
-//        for (int j=0;j<13;j++){//corner and edge points
-//            vertexGregoryQuadCoords_test.append(vertexGregoryQuadCoords[20*i+j]);
-//            qDebug() << "j" <<j;
-            //qDebug() << "quad coords" << vertexGregoryQuadCoords[20*i+j];
-            //qDebug() << "test coords" << vertexGregoryQuadCoords_test[20*i+j];
-        }
-
-    }
-
-    qDebug() << "added test coords to vertexGregoryQuadCoords_test";
 
     gl->glBindBuffer(GL_ARRAY_BUFFER, meshCoordsBO);
     gl->glBufferData(GL_ARRAY_BUFFER, sizeof(QVector3D)*vertexGregoryQuadCoords.size(), vertexGregoryQuadCoords.data(), GL_DYNAMIC_DRAW);
-//    gl->glBufferData(GL_ARRAY_BUFFER, sizeof(QVector3D)*vertexGregoryQuadCoords_test.size(), vertexGregoryQuadCoords_test.data(), GL_DYNAMIC_DRAW);
 
     qDebug() << " → Updated meshCoordsBO for Gregory quad tessellation";
-
-    //meshIBOSize = vertexGregoryQuadCoords_test.size();
-    //qDebug() << "meshIBOSize for Gregory Quads" << meshIBOSize;
 
 }
 
@@ -124,12 +116,30 @@ void GregoryRendererQuad::draw() {
     gl->glPatchParameteri(GL_PATCH_VERTICES, 20);
     gl->glDrawArrays(GL_PATCHES, 0, meshIBOSize);
 
-//    gl->glPointSize(4);
-//    gl->glDrawArrays(GL_POINTS, 0, meshIBOSize);
-
     gl->glBindVertexArray(0);
 
     shaderProg.release();
+
+}
+
+void GregoryRendererQuad::drawEdges() {
+
+    shaderEdgesProg.bind();
+
+    if (settings->uniformGregUpdateRequired) {
+        updateUniforms();
+        settings->uniformGregUpdateRequired = false;
+    }
+
+    gl->glBindVertexArray(vao);
+
+//     set number of input vertices to 20
+    gl->glPatchParameteri(GL_PATCH_VERTICES, 20);
+    gl->glDrawArrays(GL_PATCHES, 0, meshIBOSize);
+
+    gl->glBindVertexArray(0);
+
+    shaderEdgesProg.release();
 
 }
 

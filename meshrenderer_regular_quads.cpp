@@ -5,7 +5,7 @@ MeshRendererRegularQuads::MeshRendererRegularQuads()
     meshIBOSize = 0;
 }
 
-MeshRendererRegularQuads::~MeshRendererRegularQuads() {
+MeshRendererRegularQuads::~MeshRendererRegularQuads() { //regular quads in mesh
     gl->glDeleteVertexArrays(1, &vao);
 
     gl->glDeleteBuffers(1, &meshCoordsBO);
@@ -59,7 +59,7 @@ void MeshRendererRegularQuads::initBuffers() {
 
 void MeshRendererRegularQuads::updateBuffers(Mesh& currentMesh) {
 
-    qDebug() << ".. updateBuffers";
+//    qDebug() << ".. updateBuffers";
 
     //gather attributes for current mesh
     currentMesh.extractAttributes();
@@ -68,23 +68,20 @@ void MeshRendererRegularQuads::updateBuffers(Mesh& currentMesh) {
 
     QVector<unsigned int>& regularQuadIndices = currentMesh.getRegularQuadIndices();
 
-    qDebug() << "vertexCoords size" << vertexCoords.size();
-    qDebug() << "regularQuadIndices size" << regularQuadIndices.size();
-
     gl->glBindBuffer(GL_ARRAY_BUFFER, meshCoordsBO);
     gl->glBufferData(GL_ARRAY_BUFFER, sizeof(QVector3D)*vertexCoords.size(), vertexCoords.data(), GL_DYNAMIC_DRAW);
 
-    qDebug() << " → Updated meshCoordsBO";
+//    qDebug() << " → Updated meshCoordsBO";
 
     gl->glBindBuffer(GL_ARRAY_BUFFER, meshNormalsBO);
     gl->glBufferData(GL_ARRAY_BUFFER, sizeof(QVector3D)*vertexNormals.size(), vertexNormals.data(), GL_DYNAMIC_DRAW);
 
-    qDebug() << " → Updated meshNormalsBO";
+//    qDebug() << " → Updated meshNormalsBO";
 
     gl->glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, meshIndexBO);
     gl->glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(unsigned int)*regularQuadIndices.size(), regularQuadIndices.data(), GL_DYNAMIC_DRAW);
 
-    qDebug() << " → Updated meshIndexBO";
+//    qDebug() << " → Updated meshIndexBO";
 
     meshIBOSize = regularQuadIndices.size();
 }
@@ -97,12 +94,11 @@ void MeshRendererRegularQuads::updateUniforms() {
 }
 
 void MeshRendererRegularQuads::draw() {
-    qDebug() << "***draw regular quads***";
+//    qDebug() << "***draw regular quads***";
     shaderProg.bind();
 
     if (settings->uniformUpdateRequired) {
         updateUniforms();
-        //settings->uniformUpdateRequired = false;
     }
 
     //enable primitive restart
